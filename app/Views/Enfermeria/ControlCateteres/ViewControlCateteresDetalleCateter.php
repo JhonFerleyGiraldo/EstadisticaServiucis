@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Estadística | Detalle Catéter</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" type="image/ico" href="<?=BASEURL?>app/img/logoEstadistica.ico" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/jqvmap/jqvmap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="<?=BASEURL?>dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="<?=BASEURL?>plugins/summernote/summernote-bs4.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <img src="<?=BASEURL?>app/img/logout.png"></img>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="<?=BASEURL?>Login/CerrarSesion" class="dropdown-item">
+            <i class="fas"></i> Cerrar Sesión
+          </a>
+
+          
+        </div>
+      </li>
+
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+<!-- AGREGAMOS EL ASIDE-->
+<?php require_once("app/Views/Shared/ViewAside.php");?>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Nuevo Catéter</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form">
+                <div class="card-body">
+                    
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-2">
+                            <label for="documento">Doc Paciente</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="documento" disabled>
+                            </div> 
+							<div class="col-md-2">
+                            <label for="nombre">Paciente</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="nombre" disabled>
+                            </div>
+							<div class="col-md-2">
+								<label for="tipoDoc">Tipo Documento</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="tipoDoc" disabled>
+                            </div> 							
+                        </div> 
+                    </div>
+
+					<div class="form-group">
+                        <div class="row">
+                            <div class="col-md-2">
+								<label for="numIngreso">Num Ingreso</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="NumIngreso" disabled>
+                            </div>
+							<div class="col-md-2">
+								<label for="fechaInsercion">Fecha Insercion</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="fechaInsercion" disabled>
+                            </div> 
+							<div class="col-md-2">
+								<label for="tipoCateter">Tipo Catéter</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="tipoCateter" disabled>
+                            </div>
+                        </div> 
+                    </div>
+				
+					<div class="form-group">
+                        <div class="row">
+                             <div class="col-md-2">
+								<label for="ubiAnatomica">Ubi. Anatom.</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="ubiAnatomica" disabled>
+                            </div>
+							 <div class="col-md-2">
+                            <label for="lugarProcedimiento">Lug. Procedimiento</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="lugarProcedimiento" disabled>
+                            </div>
+							<div class="col-md-2">
+								<label for="medico">Medico</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="medico" disabled>
+                            </div>
+                        </div> 
+                    </div>
+					
+					<div class="form-group">
+                        <div class="row">
+							 <div class="col-md-2">
+                            <label for="enfermero">Enfermer@</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="enfermero" disabled>
+                            </div>
+							<div class="col-md-2">
+								<label for="numPunciones">Numero Punciones</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="numPunciones" disabled>
+                            </div> 
+							<div class="col-md-2">
+								<label for="fechaRetiro">Fecha Retiro</label>
+                            </div>
+                            <div class="col-md-2">
+                            <input class="form-control" type="date" value="<?=date('Y-m-d')?>" max="<?=date('Y-m-d')?>" id="fechaRetiro">
+                            </div> 
+                        </div> 
+                    </div>
+					
+					
+					<div class="form-group">
+            <div class="row">
+              <div class="col-md-2">
+                <label for="motivoRetiro">Motivo Retiro</label>
+              </div>
+              <div class="col-md-2">
+                <select class="form-control select2" id="motivoRetiro" name="motivoRetiro" style="width: 100%;">
+                  <option ></option>
+                  <option >Orden Médica</option>
+                  <option >Sospecha Infección</option>
+                  <option >Disfunción</option>
+                  <option >Otra</option>
+                </select>
+              </div> 
+              <div class="col-md-2">
+                  <label for="otroMotivoRetiro">Otro Motivo</label>
+                </div>
+                <div class="col-md-2">
+                  <textarea type="text" class="form-control" id="otroMotivoRetiro" maxlength="200"></textarea>
+                </div>
+                <div class="col-md-2">
+                <label for="cultivo">Cultivo</label>
+              </div>
+              <div class="col-md-2">
+                <select class="form-control select2" id="cultivo" style="width: 100%;">
+                    <option selected>SI</option>
+                    <option >NO</option>
+                </select>
+              </div>  
+            </div> 
+          </div>
+
+
+          <div class="form-group">
+            <div class="row">           
+              <div class="col-md-2">
+                <label for="reporte">Reporte</label>
+              </div>
+              <div class="col-md-2">
+                <textarea type="text" class="form-control" id="reporte" maxlength="200"></textarea>
+              </div>
+              <div class="col-md-2">
+                  <label for="diasCateter">Días Catéter</label>
+                </div>
+                <div class="col-md-2">
+                  <input type="text" class="form-control" id="diasCateter" disabled>
+                </div> 
+            </div> 
+          </div>
+
+        </div>
+    
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button"  onclick="window.history.back();" class="btn btn-success">Volver</i></button>
+                            </div>
+                            <div class="col-md-6">
+                                <button id="botonRetirarCateter" type="button" onclick="RetirarCateter();" class="btn btn-primary"> Retirar</button>
+                            </div> 
+                        </div> 
+                </div>
+              </form>
+            </div>
+
+
+            <!-- /.card -->
+
+          </div>
+         
+          <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+	
+	
+    <!-- /.content -->
+  </div>
+
+
+
+
+
+
+
+
+
+  
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+
+<!-- AGREGAMOS EL FOOTER-->
+<?php require_once("app/Views/Shared/ViewFooter.php");?>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="<?=BASEURL?>plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="<?=BASEURL?>plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="<?=BASEURL?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="<?=BASEURL?>plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="<?=BASEURL?>plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<!--
+<script src="<?=BASEURL?>plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="<?=BASEURL?>plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+              -->
+<!-- jQuery Knob Chart -->
+<script src="<?=BASEURL?>plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="<?=BASEURL?>plugins/moment/moment.min.js"></script>
+<script src="<?=BASEURL?>plugins/daterangepicker/daterangepicker.js"></script>
+<script src="<?=BASEURL?>plugins/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="<?=BASEURL?>plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="<?=BASEURL?>plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="<?=BASEURL?>plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="<?=BASEURL?>dist/js/adminlte.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<!--<script src="<?=BASEURL?>dist/js/pages/dashboard.js"></script>-->
+<!-- AdminLTE for demo purposes -->
+<script src="<?=BASEURL?>dist/js/demo.js"></script>
+
+
+<script>
+
+
+
+
+//variables de los campos
+var codigoCateter;
+var codigoIngreso;
+var fechaInsercion;
+var tipoCateter;
+var ubicacionAnatomica;
+var lugarProcedimiento;
+var medico=null;
+var codenfermero='<?=$_SESSION["codigoUsuario"]?>';
+var numeroPunciones;
+var fechaRetiro;
+var motivoRetiro;
+var cultivo;
+var reporte;
+
+$(document).ready(function(){
+
+    <?php
+        //validamos si las variables vienen vacias
+        if($codigoCateter==''){
+          $codigoCateter=0;
+        }
+        if($codigoIngreso==''){
+          $codigoIngreso=0;
+        }
+    ?>
+
+    var perfilUsuario='<?=$_SESSION["perfilUsuario"]?>';
+    //Validamos el perfil
+
+    if(perfilUsuario!="ADMINISTRADOR" && perfilUsuario!="ENFERMERIA"){
+        $("#botonRetirarCateter").hide();
+    }
+
+    //deshabilitamos el campo de otro motivo
+    $("#otroMotivoRetiro").prop('disabled',true);
+
+    //Se capturan las variables de php que
+    //contienen los parametros get para la consulta
+    codigoCateter=<?=$codigoCateter?>;
+    codigoIngreso=<?=$codigoIngreso?>;
+
+
+    //Validamos si los campos del formulario son diferentes de 0
+    //ya que si son 0 quiere decir que no mandaron valor por get en url
+    if(codigoCateter!=0 && codigoIngreso!=0){
+
+      var datosCateter=ConsultarDatosCateter(codigoCateter,codigoIngreso);
+
+        //recorremos la repuesta
+        $(datosCateter).each(function(i, v){ // indice, valor
+            //Llenamos los campos del formulario con la informacion
+            //obtenida por la consulta   
+            $("#tipoDoc").val(v.tipoDoc);       
+            $("#nombre").val(v.paciente);
+            $("#documento").val(v.documentoPaciente);
+            $("#NumIngreso").val(v.numIngreso);
+            $("#fechaInsercion").val(v.fechInsercion);
+            $("#tipoCateter").val(v.tipoCat);
+            $("#ubiAnatomica").val(v.ubiAnato);
+            $("#lugarProcedimiento").val(v.lugProcedimiento);
+            
+
+            if(v.numPunciones==0){
+              $("#numPunciones").val("N/A");
+            }else{
+              $("#numPunciones").val(v.numPunciones);
+            }
+
+            if(v.medico==null){
+              $("#medico").val("N/A");
+            }else{
+              $("#medico").val(v.medico);
+            }
+            if(v.enfermero==null){
+              $("#enfermero").val("N/A");
+            }else{
+              $("#enfermero").val(v.enfermero);
+            }
+            
+            //si la fecha de retiro tiene valor
+            //es porque el cateter ya fue retirado, llenamos los campos que faltan y los bloqueamps
+            //tambien quitamos el boton ya que no se permiten mas procesos
+            if(v.fechRetiro!=null){
+              $("#fechaRetiro").val(v.fechRetiro);
+              $('#fechaRetiro').prop('disabled', true);
+              //cuando se agrega el retiro se puede ingresar cualquier valor , asi que se adiciona el dato 
+              //al select por si no existe ese valor ingresado a mano
+              $('#motivoRetiro').prepend("<option value='"+v.motivo+"' >"+v.motivo+"</option>");
+              $('#motivoRetiro').val(v.motivo);
+              $('#motivoRetiro').prop('disabled', true);
+              $('#otroMotivoRetiro').prop('disabled', true);
+              $("#cultivo").val(v.cultivo);
+              $('#cultivo').prop('disabled', true);
+              $("#reporte").val(v.reporte);
+              $('#reporte').prop('disabled', true);
+              $("#botonRetirarCateter").hide();
+            }
+
+
+            //sacamos la diferencia en dias para saber el dia de sonda
+            if($("#fechaRetiro").val()!=''){
+                var insercion = moment($("#fechaInsercion").val());
+                var retiro = moment($("#fechaRetiro").val());
+                diasSond=retiro.diff(insercion, 'days');
+                //validamos si se retiro el mismo día igual contamos como un dia
+                if(diasSond==0){
+                    diasSond++;
+                }
+                $("#diasCateter").val(diasSond);
+            }
+
+        });
+
+    
+
+    }else{
+        //si las variables son 0 es porque no se envio ningun valor por get a la url
+        $(document).Toasts('create', {
+            class: 'bg-danger', 
+            title: 'Error',
+            subtitle: 'Error',
+            body: 'Error en la recuperacion de parametros GET por url.',
+            icon:"fas fa-exclamation-circle",
+            autohide:true,
+            delay:5000
+        }); 
+  }
+
+
+
+});
+
+
+//validamos el cambio de el motivo de retiro
+$("#motivoRetiro").change(function() {
+  //si la opcion no es otra, de debe deshabilitar el campo de otro motivo
+  if($("#motivoRetiro").val()!='Otra'){
+    $("#otroMotivoRetiro").val("");
+    $("#otroMotivoRetiro").prop('disabled',true);
+  }else{
+    $("#otroMotivoRetiro").prop('disabled',false);
+  }
+});
+
+//validamos el cambio de el cultivo
+$("#cultivo").change(function() {
+  //si la opcion es no, de debe deshabilitar el campo de reporte
+  if($("#cultivo").val()=='NO'){
+    $("#reporte").val("");
+    $("#reporte").prop('disabled',true);
+  }else{
+    $("#reporte").prop('disabled',false);
+  }
+});
+
+
+//sacamos la diferencia en dias para saber el dia de sonda
+$("#fechaRetiro").change(function(){
+    var insercion = moment($("#fechaInsercion").val());
+    var retiro = moment($("#fechaRetiro").val());
+    diasSond=retiro.diff(insercion, 'days');
+    //validamos si se retiro el mismo día igual contamos como un dia
+    if(diasSond==0){
+        diasSond++;
+    }
+    $("#diasCateter").val(diasSond);
+});
+
+function ConsultarDatosCateter(codCateter,codIngreso){
+ 
+  var datosCateter;
+  $.ajax({
+            type:"POST",
+            dataType: 'json',
+            async:false,//para que no sea asincrono
+            url: '../ControlCateteres/GetConsultarDatosCateter',//llamado a metodo
+            data:{"codCateter":codCateter,"codIngreso":codIngreso}, //parametros
+            success: function(response)
+            {   
+                
+
+              datosCateter=response
+
+              //console.log(response);
+            },
+            error: function (error) {
+              //mensajes de error
+                $(document).Toasts('create', {
+                    class: 'bg-danger', 
+                    title: 'Validación',
+                    subtitle: 'Error',
+                    body: 'Error consultando datos del cateter (error llamando consulta).',
+                    icon:"fas fa-exclamation-circle",
+                    autohide:true,
+                    delay:5000
+                });  
+                console.log(error);
+            }
+    });
+
+    return datosCateter;
+
+}
+
+
+
+
+
+//Funcion encargada de mandar la informacion a guardar
+function RetirarCateter(){
+
+    if(ValidarCampos()){
+
+      GuardarRetiroCateter(codigoCateter,codigoIngreso,fechaRetiro,motivoRetiro,cultivo,reporte);
+
+      //se redirecciona la pagina hacia atras en 400.000 milisegundos
+      setTimeout(window.history.back(),400000);
+    }
+
+}
+
+
+
+
+function GuardarRetiroCateter(idCateter,codigoIngreso,fechaRetiro,motivo,cultivo,reporte){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../ControlCateteres/SetRetirarCateter',//llamado a metodo
+        data: { "idCateter":idCateter,"codIngreso":codigoIngreso,"fechaRetiro":fechaRetiro,"motivo":motivo,"cultivo":cultivo,"reporte":reporte}, //parametros
+        success: function(response)
+        {   
+          if(response==1){
+              $(document).Toasts('create', {
+                class: 'bg-success', 
+                title: 'Validación',
+                subtitle: 'Aviso',
+                body: 'Catéter retirado correctamente.',
+                icon:"fas fa-check-circle",
+                autohide:true,
+                delay:5000
+              });
+
+            }else{
+              $(document).Toasts('create', {
+                  class: 'bg-danger', 
+                  title: 'Validación',
+                  subtitle: 'Error',
+                  body: 'Error retirando el cateter (error llamando consulta).',
+                  icon:"fas fa-exclamation-circle",
+                  autohide:true,
+                  delay:5000
+              }); 
+            }
+          console.log(response);
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error retirando el cateter (error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+
+
+}
+
+//Funcion encargada de validar los campos del formulario
+//validaro los datos que se encuentran allí
+function ValidarCampos(){
+
+    if($("#fechaRetiro").val()==''){
+      $(document).Toasts('create', {
+              class: 'bg-warning', 
+              title: 'Validación',
+              subtitle: 'Mensaje',
+              body: 'Se debe seleccionar la fecha de retiro.',
+              icon:"fas fa-exclamation-circle",
+              autohide:true,
+              delay:5000
+      });
+      $("#fechaRetiro").focus(); 
+      fechaRetiro="";
+      return false;
+    }else{
+      fechaRetiro=$("#fechaRetiro").val();
+    }
+
+
+    //validamos que la fecha a ingresar en el sistema no sea mayor a la actual
+    var fechaActual='<?= date('Y-m-d'); ?>';
+    if(fechaRetiro>fechaActual){
+      $(document).Toasts('create', {
+          class: 'bg-warning', 
+          title: 'Validación',
+          subtitle: 'Aviso',
+          body: 'La fecha de retiro no puede ser mayor a la fecha actual.',
+          icon:"fas fa-exclamation-triangle",
+          autohide:true,
+          delay:5000
+        });
+        return false;
+    }
+
+    if($("#fechaRetiro").val()<$("#fechaInsercion").val()){
+        $(document).Toasts('create', {
+                class: 'bg-warning', 
+                title: 'Validación',
+                subtitle: 'Mensaje',
+                body: 'La fecha de retiro no debe ser menor a la de inserción.',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+        });
+        $("#fechaRetiro").focus(); 
+        return false;
+    }
+
+    if($("#motivoRetiro").val()==''){
+        $(document).Toasts('create', {
+                class: 'bg-warning', 
+                title: 'Validación',
+                subtitle: 'Mensaje',
+                body: 'Se debe ingresar el motivo del retiro.',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+        });
+        $("#motivoRetiro").focus(); 
+        motivoRetiro="";
+        return false;
+    }else{
+      if($("#motivoRetiro").val()=='Otra'){
+        
+        if($("#otroMotivoRetiro").val()==''){
+          $(document).Toasts('create', {
+                  class: 'bg-warning', 
+                  title: 'Validación',
+                  subtitle: 'Mensaje',
+                  body: 'Se debe ingresar otro motivo de retiro.',
+                  icon:"fas fa-exclamation-circle",
+                  autohide:true,
+                  delay:5000
+          });
+          $("#otroMotivoRetiro").focus(); 
+          motivoRetiro="";
+          return false;
+        }else{
+          motivoRetiro=$("#otroMotivoRetiro").val();
+        }
+
+      }else{
+        motivoRetiro=$("#motivoRetiro").val();
+      }
+    }
+
+    if($("#cultivo").val()==''){
+        $(document).Toasts('create', {
+                class: 'bg-warning', 
+                title: 'Validación',
+                subtitle: 'Mensaje',
+                body: 'Se debe seleccionar el cultivo.',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+        });
+        $("#cultivo").focus(); 
+        cultivo="";
+        return false;
+    }else{
+      cultivo=$("#cultivo").val();
+    }
+
+    if($("#cultivo").val()=='SI'){
+      if($("#reporte").val()==''){
+        $(document).Toasts('create', {
+                class: 'bg-warning', 
+                title: 'Validación',
+                subtitle: 'Mensaje',
+                body: 'Se debe ingresar el reporte.',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+        });
+        $("#reporte").focus(); 
+        reporte="";
+        return false;
+      }else{
+        reporte=$("#reporte").val();
+      }
+    }else{
+      reporte='';
+    }
+
+    
+
+    return true;
+}
+
+
+//Funcion para validar numeros enteros del 0-9
+function soloNumeros(e){
+	var key = window.Event ? e.which : e.keyCode
+	return (key >= 48 && key <= 57)
+}
+
+</script>
+
+
+</body>
+</html>
