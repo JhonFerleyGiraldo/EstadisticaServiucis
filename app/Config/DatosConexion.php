@@ -15,7 +15,7 @@
 	define("DBCHARSET","utf8");
 
 	/*INICIO SERVIDOR LOCAL */
-
+/*
 	//datos conexion mysql
 	define("DBNAMEM","bdestadistica");
 	define("DBUSERM","root");
@@ -24,22 +24,22 @@
 	
 	define("BASEURL","http://localhost/UCI/EstadisticaEnfermeria/");//para llamados a archivos
 	define("BASEPATH","C:\\xampp\\htdocs\\UCI\\EstadisticaEnfermeria\\");//para imagenes
-
+*/
 	/*FIN CONEXION LOCAL*/
 
 
 
 	/*INICIO CONEXION SERVIDOR UBUNTU*/
-	/*
+	
 	//datos conexion mysql
 	define("DBNAMEM",'bdestadistica');
 	define("DBUSERM",'phpmyadmin');
 	define("DBPASSM",'1234');
 	define("DBHOSTM",'localhost');
 	
-	define("BASEURL","http://10.10.10.110:8081/serviucis/desarrollo/EstadisticaEnfermeria/");//para llamados a archivos
-	define("BASEPATH","/var/www/html/serviucis/desarrollo/EstadisticaEnfermeria/");//para imagenes
-	*/
+	define("BASEURL","http://10.10.10.110:8081/serviucis/aplicaciones/EstadisticaServiucis/");//para llamados a archivos
+	define("BASEPATH","/var/www/html/serviucis/aplicaciones/EstadisticaServiuicis/");//para imagenes
+	
 	/*FIN CONEXION SERVIDOR UBUNTU*/
 
 
