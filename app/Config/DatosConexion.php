@@ -37,8 +37,8 @@
 	define("DBPASSM",'bdestadistica');
 	define("DBHOSTM",'localhost');
 	
-	define("BASEURL","http://10.10.10.110:8081/serviucis/desarrollo/EstadisticaServiucis/");//para llamados a archivos
-	define("BASEPATH","/var/www/html/serviucis/desarrollo/EstadisticaServiucis/");//para imagenes
+	define("BASEURL","http://10.10.10.110:8081/serviucis/aplicaciones/EstadisticaServiucis/");//para llamados a archivos
+	define("BASEPATH","/var/www/html/serviucis/aplicaciones/EstadisticaServiucis/");//para imagenes
 	
 	/*FIN CONEXION SERVIDOR UBUNTU*/
 
