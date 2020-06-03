@@ -36,6 +36,4 @@ docs_html/
 test.html
 ad.js
 
-
-//IGNORAMOS EL ARCHIVO DE CONFIGURACION, YA QUE CADA RAMA TIENE SU PROPIA CONEXION
-*DatosConexion.php
+DatosConexion.php
