@@ -1277,7 +1277,7 @@ class ControllerReportes{
         $fpdf->SetTextColor(255,255,255);
         $fpdf->Cell(45,5,'Promedio Días VM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(12,5, round($totDiasvm/$pacienVm),1,0,'C');
+        $fpdf->Cell(12,5, round($totDiasvm/$pacienVm,2),1,0,'C');
 
 
         //INICIO GRAFICO Y DATOS DE CAMBIO DE POSICION
