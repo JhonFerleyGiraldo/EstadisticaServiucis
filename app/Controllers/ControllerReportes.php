@@ -12,6 +12,9 @@ require_once("app/Models/Mysql/ControlSondasVesicales.php");
 require_once("app/Models/Mysql/Ingreso.php");
 require_once("app/Models/Mysql/Estancia.php");
 require_once("app/Models/Mysql/TerapiaFisica.php");
+require_once("app/Models/Mysql/EstadisticaTerapiafisica.php");
+require_once("app/Models/Mysql/FuerzaIngreso.php");
+require_once("app/Models/Mysql/FuerzaEgreso.php");
 require_once("app/Utiles/PDF/fpdf/clasesPropias/PDF.php");
 
 //libreria de excel usando composer
@@ -1135,7 +1138,35 @@ class ControllerReportes{
         $fileData = base64_decode($grafiTeraVM);
         $fileName =$rutaGraficos.'grafico1.png';
         file_put_contents($fileName, $fileData);
+        
+        //PROCESAMOS SEGUNDO GRAFICO DE CAMBIOS DE POSICION
+        $graficaCambiosPos=$_POST['InputcambiosPosicion'];
+        $graficaCambiosPos=str_replace('data:image/png;base64,','',$graficaCambiosPos);
+        $fileData=base64_decode($graficaCambiosPos);
+        $fileName=$rutaGraficos.'grafico2.png';
+        file_put_contents($fileName,$fileData);
 
+        //PROCESAMOS TERCER GRAFICO DE TRANSFERENCIA LOGRADA AL ALTA
+        $graficaTransferenciaLograda=$_POST['InputTransferenciaLograda'];
+        $graficaTransferenciaLograda=str_replace('data:image/png;base64,','',$graficaTransferenciaLograda);
+        $fileData=base64_decode($graficaTransferenciaLograda);
+        $fileName=$rutaGraficos.'grafico3.png';
+        file_put_contents($fileName,$fileData);
+
+        //PROCESAMOS CUARTO GRAFICO DE FUERZA MUSCULAR
+        $graficaFuerzaMuscular=$_POST['InputFuerzaMuscular'];
+        $graficaFuerzaMuscular=str_replace('data:image/png;base64,','',$graficaFuerzaMuscular);
+        $fileData=base64_decode($graficaFuerzaMuscular);
+        $fileName=$rutaGraficos.'grafico4.png';
+        file_put_contents($fileName,$fileData);
+
+
+        //PROCESAMOS QUINTO GRAFICO DE PERME INICIAL Y FINAL
+        $graficaPermeInicialyFinal=$_POST['InputPermeInicialyFinal'];
+        $graficaPermeInicialyFinal=str_replace('data:image/png;base64,','',$graficaPermeInicialyFinal);
+        $fileData=base64_decode($graficaPermeInicialyFinal);
+        $fileName=$rutaGraficos.'grafico5.png';
+        file_put_contents($fileName,$fileData);
 
 
         //CREAMOS EL PDF
@@ -1186,23 +1217,120 @@ class ControllerReportes{
         $fpdf->SetFont('Arial','',10);
         $fpdf->Cell(0,5,$codSede . ' - ' . $nomSede ,0,0,'L');
 
-        //INICIO GRAFICO Y DATOS DE TERAPIA VENTILACION MECANICA
+        $fpdf->Ln();
+        $fpdf->SetX(0);
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->Cell(0,5,'Datos Generales',0,0,'C');
+
+        $fpdf->SetFillColor(16,87,97);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->SetDrawColor(16,87,97);
+        $fpdf->SetFont('Arial','B',11);
+        
+        //instanciamos el modelo
+        $objEstTerapiaFisi=new EstadisticaTerapiafisica();
+
+        $fpdf->Ln(7);
+        $fpdf->SetX(10);
+        $fpdf->SetLineWidth(0.5);
+        $fpdf->Cell(45,5,'Pacientes Atendidos',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+
+        //obtenemos cantidad d epacientes atendidos
+        $fpdf->Cell(12,5,$objEstTerapiaFisi->GetCantidadPacientesAtendidos($fechaInicial,$fechaFin,$codSede),1,0,'C');
+    
+        //instanciamos modelo
+        $objTerapias=new TerapiaFisica();
+        
+        $fpdf->SetX(67);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(45,5,'Sesiones Fisioterapia',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+        //obtenemos cantidad de terapias fisicas por fecha y sede
+        $fpdf->Cell(12,5,$objTerapias->GetConsultarCantidadTerapiasXfecha($fechaInicial,$fechaFin,$codSede) ,1,0,'C');
+
+        $fpdf->SetX(124);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(45,5,'Pacientes con VM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+        //obtenemos cantidad pacientes con vm por fecha y sede
+        $pacienVm=$objTerapias->GetConsultarCantidadPacientesConVMXfecha($fechaInicial,$fechaFin,$codSede);
+        $fpdf->Cell(12,5,$pacienVm,1,0,'C');
+
+        $fpdf->Ln(7);
+        $fpdf->SetX(10);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(45,5,'Pacientes Fallecidos',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+        //obtenemos cantidad de pacientes fallecidos
+        $fpdf->Cell(12,5,$objEstTerapiaFisi->GetCantidadPacientesAtendidosFallecidos($fechaInicial,$fechaFin,$codSede),1,0,'C');
+
+        $fpdf->SetX(67);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(45,5,'Total Días VM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+        //Obtenemos el total de dias de vm de todos los pacientes
+        $totDiasvm=$objTerapias->GetConsultarCantidadDiasConVMPacientesXfecha($fechaInicial,$fechaFin,$codSede);
+        $fpdf->Cell(12,5,$totDiasvm,1,0,'C');
+
+        $fpdf->SetX(124);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(45,5,'Promedio Días VM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0);
+        $fpdf->Cell(12,5, ($totDiasvm/$pacienVm),1,0,'C');
+
+
+        //INICIO GRAFICO Y DATOS DE CAMBIO DE POSICION
         $fpdf->SetFont('Arial','B',12);
         $fpdf->Ln(20);
         $fpdf->SetX(40);
-        $fpdf->SetY(70);
-        $fpdf->Image($rutaGraficos.'grafico1.png',0,70,100,50,'png');
-        $fpdf->SetX(40);
+        $fpdf->SetY(100);
+        //abrimos la imagen del grafico
+        $fpdf->Image($rutaGraficos.'grafico2.png',10,100,90,50,'png');
+        $fpdf->SetX(90);
+        $fpdf->Cell(0,5,'Cambios de Posición Durante Terapia',0,0,'C');
+        $fpdf->SetDrawColor(16,87,97);
+        $fpdf->Ln(7);
+        $fpdf->SetFillColor(16,87,97);
+        $fpdf->SetTextColor(255,255,255);
+
+        //ontenemos cambios de posicion
+        $cambiosPosicion=$objTerapias->GetCambiosPosicionXfecha($fechaInicial,$fechaFin,$codSede);
+
+        $fpdf->SetFont('Arial','',11);
+        //recorremos todos los cambios de posicion con su total
+        foreach($cambiosPosicion as $item){
+            $fpdf->SetX(110);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["descrip"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["cantidad"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+        
+        $fpdf->Ln(10);
+
+        //FIN GRAFICO Y DATOS DE CAMBIO DE POSICION
+
+        //INICIO GRAFICO Y DATOS DE TERAPIA VENTILACION MECANICA
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->SetX(0);
         $fpdf->Cell(0,5,'Terapias ventilación mecánica',0,0,'C');
+        $fpdf->Ln(20);
+        $fpdf->SetX(40);
+        $fpdf->SetY(180);
+        $fpdf->Image($rutaGraficos.'grafico1.png',100,180,100,50,'png');
+        
+
         $fpdf->SetDrawColor(16,87,97);
         $fpdf->Ln(7);
         $fpdf->SetFillColor(16,87,97);
         $fpdf->SetTextColor(255,255,255);
         
         //consultamos datos del grafico
-        //instanciamos clase y seteamos el codigo de ingreso
-        $estadistica= new TerapiaFisica();
-        $datosGrafico=$estadistica->GetTerapiasVentilacionMecanica($fechaInicial,$fechaFin,$codSede);
+        // seteamos el codigo de ingreso
+        $datosGrafico=$objTerapias->GetTerapiasVentilacionMecanica($fechaInicial,$fechaFin,$codSede);
 
         $totalTerapias=0;
         $terapiasCVM=0;
@@ -1227,44 +1355,213 @@ class ControllerReportes{
         $porcentajeCVM=$terapiasCVM*100/$totalTerapias;
         $porcentajeSVM=$terapiasSVM*100/$totalTerapias;
 
-        $fpdf->SetX(92);
+        $fpdf->SetFont('Arial','',11);
+        $fpdf->SetX(10);
         $fpdf->SetLineWidth(0.5);
-        $fpdf->Cell(35,5,'N° Terapias',1,0,'L',1);
+        $fpdf->Cell(45,5,'N° Terapias',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
         $fpdf->Cell(35,5,$totalTerapias,1,0,'C');
         
         $fpdf->Ln(7);
-        $fpdf->SetX(92);
+        $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(35,5,'Terapias CVM',1,0,'L',1);
+        $fpdf->Cell(45,5,'Terapias CVM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
         $fpdf->Cell(35,5,$terapiasCVM,1,0,'C');
 
         $fpdf->Ln(7);
-        $fpdf->SetX(92);
+        $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(35,5,'Terapias SVM',1,0,'L',1);
+        $fpdf->Cell(45,5,'Terapias SVM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
         $fpdf->Cell(35,5,$terapiasSVM,1,0,'C');
 
         $fpdf->Ln(7);
-        $fpdf->SetX(92);
+        $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(35,5,'% Terapias CVM',1,0,'L',1);
+        $fpdf->Cell(45,5,'% Terapias CVM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
         $fpdf->Cell(35,5,round($porcentajeCVM,3) . '%',1,0,'C');
 
         $fpdf->Ln(7);
-        $fpdf->SetX(92);
+        $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(35,5,'% Terapias SVM',1,0,'L',1);
+        $fpdf->Cell(45,5,'% Terapias SVM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
         $fpdf->Cell(35,5,round($porcentajeSVM,3) . '%',1,0,'C');
         //FIN GRAFICO Y DATOS DE TERAPIA VENTILACION MECANICA
 
+        //agregamos nueva pagina
+        $fpdf->AddPage();
+
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->SetY(30);
+        $fpdf->SetTextColor(16,87,97);
+        $fpdf->Cell(0,5,'REPORTE ESTADÍSTICA MENSUAL TERAPIA FÍSICA',0,0,'C');
+        $fpdf->SetDrawColor(61,174,233);
+        $fpdf->SetLineWidth(1);
+        $fpdf->Line(55,$fpdf->GetY()+6 ,161,$fpdf->GetY()+6);
+
+        $fpdf->SetTextColor(0,0,0);
+        $fpdf->SetFont('Arial','B',10);
+        $fpdf->Ln(10);
+
+        //INICIO GRAFICO Y DATOS DE TRANSFERENCIA LOGRADA AL ALTA
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->SetX(40);
+        $fpdf->SetY(45);
+        //abrimos la imagen del grafico
+        $fpdf->Image($rutaGraficos.'grafico3.png',10,45,90,50,'png');
+        $fpdf->SetX(90);
+        $fpdf->Cell(0,5,'Transferencia Lograda al Alta',0,0,'C');
+        $fpdf->SetDrawColor(16,87,97);
+        $fpdf->Ln(7);
+        $fpdf->SetFillColor(16,87,97);
+        $fpdf->SetTextColor(255,255,255);
+
+        //ontenemos cambios de posicion
+        $transferenciaLograda=$objEstTerapiaFisi->GetTransferenciasAlAltaXfechas($fechaInicial,$fechaFin,$codSede);
+
+        $fpdf->SetFont('Arial','',11);
+        //recorremos todos los cambios de posicion con su total
+        foreach($transferenciaLograda as $item){
+            $fpdf->SetX(110);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["descrip"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["cantidad"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+        
+        $fpdf->Ln(10);
+
+        //FIN GRAFICO Y DATOS DE TRANSFERENCIA LOGRADA AL ALTA
+
+
+        //INICIO GRAFICO Y DATOS DE FUERZA MUSCULAR
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->SetX(40);
+        $fpdf->SetY(100);
+        //abrimos la imagen del grafico
+        $fpdf->Image($rutaGraficos.'grafico4.png',100,120,90,50,'png');
+        $fpdf->SetX(0);
+        $fpdf->Cell(0,5,'Fuerza Muscular de Ingreso y Egreso',0,0,'C');
+        $fpdf->SetDrawColor(16,87,97);
+        $fpdf->Ln(7);
+        $fpdf->SetFillColor(16,87,97);
+        $fpdf->SetTextColor(0,0,0);
+
+        //estanciamos la clase
+        $fuerza= new FuerzaIngreso();
+        $fuerzaMuscularIngreso=$fuerza->GetConsultarFuerzasIngresoXfechas($fechaInicial,$fechaFin,$codSede);
+
+
+        $fpdf->SetFont('Arial','',11);
+        $fpdf->Ln(10);
+        $fpdf->SetX(10);
+        $fpdf->SetY(110);
+        $fpdf->Write(5,'FUERZAS INGRESO ');
+        $fpdf->Ln(10);
+        //recorremos todos los cambios de posicion con su total
+        foreach($fuerzaMuscularIngreso as $item){
+            $fpdf->SetX(10);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["fuerzaTotalIngreso"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+        
+        $fpdf->Ln(10);  
+
+        //instanciamos clase
+        $fuerza= new FuerzaEgreso();
+        $fuerzaMuscularEgreso=$fuerza->GetConsultarFuerzasEgresoXfechas($fechaInicial,$fechaFin,$codSede);
+
+        $fpdf->SetFont('Arial','',11);
+        $fpdf->SetX(10);
+        $fpdf->SetY(145);
+        $fpdf->Write(5,'FUERZAS EGRESO ');
+        $fpdf->SetY(155);
+        //recorremos todos los cambios de posicion con su total
+        foreach($fuerzaMuscularEgreso as $item){
+            $fpdf->SetX(10);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["fuerzaTotalIngreso"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+
+        //FIN GRAFICO Y DATOS DE FUERZA MUSCULAR
+
+
+        //INICIO GRAFICO Y DATOS DE PERME INICIAL Y FINAL
+        $fpdf->SetFont('Arial','B',12);
+        $fpdf->SetX(40);
+        $fpdf->SetY(180);
+        //abrimos la imagen del grafico
+        $fpdf->Image($rutaGraficos.'grafico5.png',10,190,90,50,'png');
+        $fpdf->SetX(0);
+        $fpdf->Cell(0,5,'Perme Ingreso y Perme Egreso',0,0,'C');
+        $fpdf->SetDrawColor(16,87,97);
+        $fpdf->Ln(7);
+        $fpdf->SetFillColor(16,87,97);
+        $fpdf->SetTextColor(0,0,0);
+
+         $permeInicial=$objEstTerapiaFisi->GetPermeInicialXfechas($fechaInicial,$fechaFin,$codSede);
+
+        $fpdf->SetFont('Arial','',11);
+        $fpdf->Ln(10);
+        $fpdf->SetY(195);
+        $fpdf->SetX(110);
+        $fpdf->Write(5,'PERME INGRESO');
+        $fpdf->Ln(10);
+        $fpdf->SetY(202);
+        //recorremos todos los cambios de posicion con su total
+        foreach($permeInicial as $item){
+            $fpdf->SetX(110);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["permeInicial"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+        
+        $fpdf->Ln(10); 
+
+        $permeFinal=$objEstTerapiaFisi->GetPermeFinalXfechas($fechaInicial,$fechaFin,$codSede);
+
+
+        $fpdf->SetFont('Arial','',11);
+        
+        $fpdf->SetY(222);
+        $fpdf->SetX(110);
+        $fpdf->Write(5,'PERME EGRESO ');
+        $fpdf->SetY(230);
+        //recorremos todos los cambios de posicion con su total
+        foreach($permeFinal as $item){
+            $fpdf->SetX(110);
+            $fpdf->SetLineWidth(0.5);
+            $fpdf->SetTextColor(255,255,255);
+            $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
+            $fpdf->SetTextColor(0,0,0);
+            $fpdf->Cell(35,5,$item["permeFinal"],1,0,'C'); 
+            $fpdf->Ln(7);
+        }
+
+        //FIN GRAFICO Y DATOS DE PERME INICIAL Y FINAL
+
         $nombreArchivo="ReporteTerapiaFisica".date('Y-m-d').'.pdf';
 
+        //para descargar pdf
         $fpdf->Output($nombreArchivo,'D'); 
+        //Para visualizar en el navegador
+        //$fpdf->Output('php://output','I'); 
     }
 
     /*
@@ -1286,6 +1583,120 @@ class ControllerReportes{
        
     }
 
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar cantidad cambios de posicion
+    */
+    public function GetCambiosPosicionXfecha(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $terapia= new TerapiaFisica();
+        $datos=$terapia->GetCambiosPosicionXfecha($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar las transferencias a la alta
+    */
+    public function GetTransferenciasAlAlta(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $estadistica= new EstadisticaTerapiafisica();
+        $datos=$estadistica->GetTransferenciasAlAltaXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar las fuerzas de ingreso
+    */
+    public function GetConsultarFuerzasIngresoXfechas(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $fuerza= new FuerzaIngreso();
+        $datos=$fuerza->GetConsultarFuerzasIngresoXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar las fuerzas de egreso
+    */
+    public function GetConsultarFuerzasEgresoXfechas(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $fuerza= new FuerzaEgreso();
+        $datos=$fuerza->GetConsultarFuerzasEgresoXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar el perme inicial
+    */
+    public function GetPermeInicialXfechas(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $estadistica= new EstadisticaTerapiafisica();
+        $datos=$estadistica->GetPermeInicialXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar el perme  final
+    */
+    public function GetPermeFinalXfechas(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $estadistica= new EstadisticaTerapiafisica();
+        $datos=$estadistica->GetPermeFinalXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
 
 }
 

@@ -101,6 +101,34 @@ class FuerzaIngreso extends Conexion{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar las fuerzas de ingreso para reporte
+    */
+    public function GetConsultarFuerzasIngresoXfechas($fechaInicio,$fechaFin,$sede){
+        try{
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_fuerzasdeingresoXfechas(:fechaInicio,:fechaFin,:sede)";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+   
+            $registros->execute(array(  ':fechaInicio'=>$fechaInicio,':fechaFin'=>$fechaFin,':sede'=>$sede));
+            
+            
+            //Logger::Log($_SESSION["documentoUsuario"],date("Y-m-d H:i:s"),"INSERTAR NUEVA ESTANCIA",DBNAMEM,"SP_insertar_nuevaEstancia");
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return  $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
 
     //metodos getter y setter
     public function SetCodigo($cod){

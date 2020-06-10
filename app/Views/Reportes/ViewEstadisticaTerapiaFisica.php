@@ -136,8 +136,12 @@
                   <div class="form-group"> 
                         <div class="row">
                             <div class="col-md-4">
-                                
+                                <!--En estos campos de formulario se pondran las imagenes de los graficos para ser enviadas al controlador-->
                                     <input type="hidden"  name="terapiasVM" id="terapiasVM"/>
+                                    <input type="hidden"  name="InputcambiosPosicion" id="InputcambiosPosicion"/>
+                                    <input type="hidden"  name="InputTransferenciaLograda" id="InputTransferenciaLograda"/>
+                                    <input type="hidden"  name="InputFuerzaMuscular" id="InputFuerzaMuscular"/>
+                                    <input type="hidden"  name="InputPermeInicialyFinal" id="InputPermeInicialyFinal"/>
                                     <button type="submit" class="btn btn-primary" id="exportarPDF"><img src="<?=BASEURL?>app/img/pdf.png"></img> Exportar a PDF</button>
                                 
                             </div>
@@ -170,6 +174,22 @@
                   <div class="form-group">
                     <div class="row">
                       <div class="col-md-6">
+                        <!-- Donut chart -->
+                        <div class="card card-primary card-outline">
+                          <div class="card-header">
+                            <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                            Cambios de Posición
+                            </h3>   
+                          </div>
+                          <div class="card-body">
+                            <canvas id="cambiosPosicion" style="height: 230px;"></canvas>
+                          </div>
+                          <!-- /.card-body-->
+                        </div>
+                        <!-- /.card -->
+                      </div> 
+                      <div class="col-md-6">
                             <!-- Donut chart -->
                             <div class="card card-primary card-outline">
                             <div class="card-header">
@@ -181,13 +201,68 @@
                                 
                             </div>
                             <div class="card-body">
+                            
                                 <canvas id="terapiasVentilacionMecanica" style="height: 230px;"></canvas>
                             </div>
                             <!-- /.card-body-->
                             </div>
                             <!-- /.card -->
-                      </div>    					
+                      </div>  					
                     </div> 
+                    <div class="row">
+                      <div class="col-md-6">
+                            <!-- Donut chart -->
+                            <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                <i class="far fa-chart-bar"></i>
+                                Transferencia Lograda al Alta
+                                </h3>
+
+                                
+                            </div>
+                            <div class="card-body">
+                                <canvas id="transferenciaLograda" style="height: 230px;"></canvas>
+                            </div>
+                            <!-- /.card-body-->
+                            </div>
+                            <!-- /.card -->
+                      </div> 
+                      <div class="col-md-6">
+                        <!-- Donut chart -->
+                        <div class="card card-primary card-outline">
+                          <div class="card-header">
+                            <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                            Fuerza Muscular al Ingreso y Egreso
+                            </h3>   
+                          </div>
+                          <div class="card-body">
+                            <canvas id="fuerzaMuscularIngresoyEgreso" style="height: 230px;"></canvas>
+                          </div>
+                          <!-- /.card-body-->
+                        </div>
+                        <!-- /.card -->
+                      </div>   					
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <!-- Donut chart -->
+                        <div class="card card-primary card-outline">
+                          <div class="card-header">
+                            <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                              Perme Inicial y Perme Final
+                            </h3>   
+                          </div>
+                          <div class="card-body">
+                            <canvas id="permeInicialyFinal" style="height: 230px;"></canvas>
+                          </div>
+                          <!-- /.card-body-->
+                        </div>
+                        <!-- /.card -->
+                      </div>  					
+                    </div>
                   </div>
                 </div>
               </form>
@@ -291,7 +366,7 @@ var fechaFin;
 var sede;
 
 
-//recuperamos datos del formulario
+//recuperamos datos del encabezado
 fechaInicio=$("#fechaInicio").val();
 fechaFin=$("#fechaFin").val();
 sede=$("#sede").val();
@@ -299,17 +374,58 @@ sede=$("#sede").val();
 
   
 //CODIGO GRAFICO 1 TerapiasVentilacionMecanica
-var ctx = document.getElementById("terapiasVentilacionMecanica");
+var ctx1 = document.getElementById("terapiasVentilacionMecanica");
 
 ConsultarTerapiasVentilacionMecanica(fechaInicio,fechaFin,sede);
 
 //FIN CODIGO GRAFICO 1 TerapiasVentilacionMecanica
 
+//CODIGO GRAFICO 2 cambioPosicion
+var ctx2 = document.getElementById("cambiosPosicion");
+
+ConsultarCambiosPosicion(fechaInicio,fechaFin,sede);
+//FIN CODIGO GRAFICO 2 cambioPosicion
+
+//CODIGO GRAFICO 3 transferenciaLograda
+var ctx3 = document.getElementById("transferenciaLograda");
+
+ConsultarTransferenciaLogradaAlta(fechaInicio,fechaFin,sede);
+//FIN CODIGO GRAFICO 3 transferenciaLograda
+
+//CODIGO GRAFICO 4 fuerzaMuscularIngresoyEgreso
+var ctx4 = document.getElementById("fuerzaMuscularIngresoyEgreso");
+
+ConsultarFuerzaIngresoEgreso(fechaInicio,fechaFin,sede);
+//FIN CODIGO GRAFICO 4 fuerzaMuscularIngresoyEgreso
+
+//CODIGO GRAFICO 5 permeInicialyFinal
+var ctx5 = document.getElementById("permeInicialyFinal");
+
+ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede);
+//FIN CODIGO GRAFICO 5 permeInicialyFinal
+
 
 //pasar las imagenenes al formulario y enviar
 document.getElementById('form').addEventListener("submit",function(){
-    var image = ctx.toDataURL(); // data:image/png....
-    $("#terapiasVM").val(image);
+
+  //Cada imagen es igual a uno de los graficos de la pagina
+  //enviamos cada grafico a un campo del formulario para luego enviarlo a el controlador
+
+    var image1 = ctx1.toDataURL(); // data:image/png....
+    $("#terapiasVM").val(image1);
+
+    var image2= ctx2.toDataURL();
+    $("#InputcambiosPosicion").val(image2);
+
+    var image3= ctx3.toDataURL();
+    $("#InputTransferenciaLograda").val(image3);
+
+    var image4= ctx4.toDataURL();
+    $("#InputFuerzaMuscular").val(image4);
+    
+    var image5= ctx5.toDataURL();
+    $("#InputPermeInicialyFinal").val(image5);
+
 },false);
 
 
@@ -370,13 +486,13 @@ function ConsultarTerapiasVentilacionMecanica(fechaInicio,fechaFin,sede){
                   }
               };
 
-          var chart1 = new Chart(ctx, {
+          var chart1 = new Chart(ctx1, {
               type: 'doughnut',
               data: data,
               options: options
           });
 
-          var dataURL = ctx.toDataURL('image/png');
+          var dataURL = ctx1.toDataURL('image/png');
 
         },
         error: function (error) {
@@ -393,6 +509,401 @@ function ConsultarTerapiasVentilacionMecanica(fechaInicio,fechaFin,sede){
             console.log(error);
         }
   });
+}
+
+/*
+  Funcion encargada de la consulta de cambios de posicion de los pacientes
+*/
+function ConsultarCambiosPosicion(fechaInicio,fechaFin,sede){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../Reportes/GetCambiosPosicionXfecha',//llamado a metodo
+        data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+        success: function(response)
+        {   
+          //console.log(response);
+
+          var valores = response;
+          
+          // obtenemos los labels
+          var valorLabels = [];
+          for (var i = valores.length - 1; i >= 0; i--)  {
+            valorLabels[i] = valores[i].transferencia;
+          }
+
+          //ontenemos los valores datos
+          var valoresData=[];
+          for(var i = valores.length - 1; i >= 0; i--){
+            valoresData[i]=valores[i].cantidad;
+          }
+          
+          var data = {
+              labels: valorLabels,
+              datasets: [{
+                  label: "Cambios de posición",
+                  data: valoresData,
+                  backgroundColor: 'rgba(22, 121, 255, 1)',
+                  borderColor: 'rgba(22, 121, 255, 1)',
+                  borderWidth: 3
+              }]
+              
+          };
+          var options = {
+                  scales: {
+                      yAxes: [{
+                          gridLines: {
+                                //display:false
+                            },
+                          ticks: {
+                            //display:false
+                          }
+                      }]
+                  }
+              };
+
+          var chart2 = new Chart(ctx2, {
+              type: 'bar',
+              data: data,
+              options: options
+          });
+
+          var dataURL = ctx2.toDataURL('image/png');
+
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error consultando cambios posición(error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+}
+
+
+/*
+  Funcion encargada de la consultar las transferencias logradas al alta
+*/
+function ConsultarTransferenciaLogradaAlta(fechaInicio,fechaFin,sede){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../Reportes/GetTransferenciasAlAlta',//llamado a metodo
+        data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+        success: function(response)
+        {   
+          //console.log(response);
+
+          var valores = response;
+          
+          // obtenemos los labels
+          var valorLabels = [];
+          for (var i = valores.length - 1; i >= 0; i--)  {
+            valorLabels[i] = valores[i].transferencia;
+          }
+
+          //obtenemos los valores datos
+          var valoresData=[];
+          for(var i = valores.length - 1; i >= 0; i--){
+            valoresData[i]=valores[i].cantidad;
+          }
+          
+          var data = {
+              labels: valorLabels,
+              datasets: [{
+                  label: "Transferencia Lograda al alta",
+                  data: valoresData,
+                  backgroundColor: 'rgba(0, 197, 255, 1)',
+                  borderColor: 'rgba(0, 197, 255, 1)',
+                  borderWidth: 3
+              }]
+              
+          };
+          var options = {
+                  scales: {
+                      yAxes: [{
+                          gridLines: {
+                                //display:false
+                            },
+                          ticks: {
+                            //display:false
+                          }
+                      }]
+                  }
+              };
+
+          var chart3 = new Chart(ctx3, {
+              type: 'bar',
+              data: data,
+              options: options
+          });
+
+          var dataURL = ctx3.toDataURL('image/png');
+
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error consultando transferencia lograda al alta(error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+}
+
+
+/*
+  Funcion encargada de la consultar la fuerza de ingreso y egreso de pacientes
+*/
+function ConsultarFuerzaIngresoEgreso(fechaInicio,fechaFin,sede){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../Reportes/GetConsultarFuerzasIngresoXfechas',//llamado a metodo
+        data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+        success: function(response)
+        {   
+          //console.log(response);
+
+          var valoresIngresos = response;
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async:false,//para que no sea asincrono
+            url: '../Reportes/GetConsultarFuerzasEgresoXfechas',//llamado a metodo
+            data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+            success: function(response)
+            {   
+              //console.log(response);
+
+              var valoresEgresos = response;
+              
+              // obtenemos los labels
+              var valorLabels = [];
+              for (var i = valoresEgresos.length - 1; i >= 0; i--)  {
+                valorLabels[i] = valoresEgresos[i].CATEGORIA;
+              }
+
+              //ontenemos los valores datos de ingresos
+              var valoresIngresosData=[];
+              for(var i = valoresIngresos.length - 1; i >= 0; i--){
+                valoresIngresosData[i]=valoresIngresos[i].fuerzaTotalIngreso;
+              }
+
+              //ontenemos los valores datos de egresos
+              var valoresEgresosData=[];
+              for(var i = valoresEgresos.length - 1; i >= 0; i--){
+                valoresEgresosData[i]=valoresEgresos[i].fuerzaTotalIngreso;
+              }
+              
+              var data = {
+                  labels: valorLabels,
+                  datasets: [{
+                      label: "Fuerza Ingreso",
+                      data: valoresIngresosData,
+                      backgroundColor: 'rgba(55, 255, 15, 1)',
+                      borderColor: 'rgba(55, 255, 15, 1)',
+                      borderWidth: 3
+                  },
+                  {
+                      label: "Fuerza Egreso",
+                      data: valoresEgresosData,
+                      backgroundColor: 'rgba(15, 255  , 179, 1)',
+                      borderColor: 'rgba(15, 255  , 179, 1)',
+                      borderWidth: 3
+                  }]
+                  
+              };
+              var options = {
+                      scales: {
+                          yAxes: [{
+                              gridLines: {
+                                    //display:false
+                                },
+                              ticks: {
+                                //display:false
+                              }
+                          }]
+                      }
+                  };
+
+              var chart4 = new Chart(ctx4, {
+                  type: 'bar',
+                  data: data,
+                  options: options
+              });
+
+              var dataURL = ctx4.toDataURL('image/png');
+
+            },
+            error: function (error) {
+              //mensajes de error
+                $(document).Toasts('create', {
+                    class: 'bg-danger', 
+                    title: 'Validación',
+                    subtitle: 'Error',
+                    body: 'Error consultando fuerzas de egreso(error llamando consulta).',
+                    icon:"fas fa-exclamation-circle",
+                    autohide:true,
+                    delay:5000
+                });  
+                console.log(error);
+            }
+      });
+
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error consultando fuerzas de ingreso(error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+}
+
+
+
+/*
+  Funcion encargada de la consultar el perme inicial y final
+*/
+function ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../Reportes/GetPermeInicialXfechas',//llamado a metodo
+        data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+        success: function(response)
+        {   
+          //console.log(response);
+
+          var valoresPermeInicial = response;
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async:false,//para que no sea asincrono
+            url: '../Reportes/GetPermeFinalXfechas',//llamado a metodo
+            data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+            success: function(response)
+            {   
+              //console.log(response);
+
+              var valoresPermeFinal = response;
+              
+              // obtenemos los labels
+              var valorLabels = [];
+              for (var i = valoresPermeFinal.length - 1; i >= 0; i--)  {
+                valorLabels[i] = valoresPermeFinal[i].CATEGORIA;
+              }
+
+              //ontenemos los valores datos de perme inicial
+              var valoresPermeInicialData=[];
+              for(var i = valoresPermeInicial.length - 1; i >= 0; i--){
+                valoresPermeInicialData[i]=valoresPermeInicial[i].permeInicial;
+              }
+
+              //ontenemos los valores datos de perme final
+              var valoresPermeFinalData=[];
+              for(var i = valoresPermeFinal.length - 1; i >= 0; i--){
+                valoresPermeFinalData[i]=valoresPermeFinal[i].permeFinal;
+              }
+              
+              var data = {
+                  labels: valorLabels,
+                  datasets: [{
+                      label: "Perme Ingreso",
+                      data: valoresPermeInicialData,
+                      backgroundColor: 'rgba(248, 255, 28, 1)',
+                      borderColor: 'rgba(248, 255, 28, 1)',
+                      borderWidth: 3
+                  },
+                  {
+                      label: "Perme Egreso",
+                      data: valoresPermeFinalData,
+                      backgroundColor: 'rgba(34, 118  , 255, 1)',
+                      borderColor: 'rgba(34, 118  , 255, 1)',
+                      borderWidth: 3
+                  }]
+                  
+              };
+              var options = {
+                      scales: {
+                          yAxes: [{
+                              gridLines: {
+                                    //display:false
+                                },
+                              ticks: {
+                                //display:false
+                              }
+                          }]
+                      }
+                  };
+
+              var chart5 = new Chart(ctx5, {
+                  type: 'bar',
+                  data: data,
+                  options: options
+              });
+
+              var dataURL = ctx5.toDataURL('image/png');
+
+            },
+            error: function (error) {
+              //mensajes de error
+                $(document).Toasts('create', {
+                    class: 'bg-danger', 
+                    title: 'Validación',
+                    subtitle: 'Error',
+                    body: 'Error consultando perme final(error llamando consulta).',
+                    icon:"fas fa-exclamation-circle",
+                    autohide:true,
+                    delay:5000
+                });  
+                console.log(error);
+            }
+      });
+
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error consultando perme inicial(error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+
 }
 
 </script>

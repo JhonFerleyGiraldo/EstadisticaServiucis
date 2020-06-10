@@ -1487,6 +1487,21 @@ function BotonActualizarEstadistica(){
         return false;
       }
 
+      if($("#transfeMax").val()==''){
+        $(document).Toasts('create', {
+                        class: 'bg-warning', 
+                        title: 'Validación',
+                        subtitle: 'Mensaje',
+                        body: 'Debe ingresar la clase funcional.',
+                        icon:"fas fa-exclamation-circle",
+                        autohide:true,
+                        delay:5000
+            });
+        $("#transfeMax").focus(); 
+        transMaxima="";
+        return false;
+      }
+
       if(claseFuncional<1 || claseFuncional>4){
         $(document).Toasts('create', {
                       class: 'bg-warning', 
