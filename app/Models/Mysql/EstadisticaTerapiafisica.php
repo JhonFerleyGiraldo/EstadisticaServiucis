@@ -87,8 +87,82 @@ class EstadisticaTerapiafisica extends Conexion{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar transferencias a la alta por fechas
+    */
+    public function GetTransferenciasAlAltaXfechas($fechaIncio,$fechaFin,$sede){
+        try{
 
-    
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_transferenciaLogradaAlta(:fechaInicio,:fechaFin,:sede);";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":fechaInicio"=>$fechaIncio,":fechaFin"=>$fechaFin,":sede"=>$sede));
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar perme inicial por fechas
+    */
+    public function GetPermeInicialXfechas($fechaIncio,$fechaFin,$sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_permeinicialXfechas(:fechaInicio,:fechaFin,:sede);";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":fechaInicio"=>$fechaIncio,":fechaFin"=>$fechaFin,":sede"=>$sede));
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar perme  final por fechas
+    */
+    public function GetPermeFinalXfechas($fechaIncio,$fechaFin,$sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_permefinalXfechas(:fechaInicio,:fechaFin,:sede);";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":fechaInicio"=>$fechaIncio,":fechaFin"=>$fechaFin,":sede"=>$sede));
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
 
     /*
@@ -139,6 +213,57 @@ class EstadisticaTerapiafisica extends Conexion{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de mostrar la cantidad de pacientes atendidos por fisioterapia de una sede
+        en un rango de fechas
+    */
+    public function GetCantidadPacientesAtendidos($fechaIncio,$fechaFin,$sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta=" SELECT EST.codigoIngreso
+                        FROM tbl_estadistica_terapiafisica AS EST INNER JOIN tbl_ingreso AS ING ON EST.codigoIngreso=ING.codigo
+                        WHERE ING.sedeAtencion=:sede AND EST.fechaInicioFisioterapia BETWEEN :fechaIni AND :fechaFin";
+
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(":sede"=>$sede,":fechaIni"=>$fechaIncio,":fechaFin"=>$fechaFin));
+
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error : " . $e->getMessage();
+        }
+    }
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de mostrar la cantidad de pacientes atendidos y que fallecieron en una sede
+        y un rango de fechas
+    */
+    public function GetCantidadPacientesAtendidosFallecidos($fechaIncio,$fechaFin,$sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta=" SELECT EST.codigoIngreso
+                        FROM tbl_estadistica_terapiafisica AS EST INNER JOIN tbl_ingreso AS ING ON EST.codigoIngreso=ING.codigo
+                        WHERE ING.sedeAtencion=:sede AND EST.estado='CERRADO' AND ING.egresoVivo='NO' AND ING.fechaCierre BETWEEN :fechaIni AND :fechaFin";
+
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(":sede"=>$sede,":fechaIni"=>$fechaIncio,":fechaFin"=>$fechaFin));
+
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error : " . $e->getMessage();
+        }
+    }
 
     //metodos getter y setter
     public function GetCodigo(){

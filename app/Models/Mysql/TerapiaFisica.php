@@ -75,6 +75,84 @@ class TerapiaFisica extends Conexion{
 
     /*
         @autor Jhon Giraldo
+        metodo encargado de consultar la cantidad de terapias de una sede en un rango de fechas
+    */
+    public function GetConsultarCantidadTerapiasXfecha($fechaInicio,$fechaFin,$sede){
+        try{
+            $this->Conectar();
+    
+            $consulta="SELECT   TER.codigo AS 'cantidad'
+                        FROM 	tbl_terapias_fisicas AS TER INNER JOIN tbl_estadistica_terapiafisica AS EST ON TER.estadistica=EST.codigo
+                                INNER JOIN tbl_ingreso AS ING  ON EST.codigoIngreso=ING.codigo
+                        WHERE   ING.sedeAtencion=:sede AND TER.fecha BETWEEN :fechaInicio AND :fechaFin ";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":sede"=>$sede,":fechaInicio"=>$fechaInicio,":fechaFin"=>$fechaFin));
+           
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar la cantidad de pacientes con ventilacion mecanica de una sede en un rango de fechas
+    */
+    public function GetConsultarCantidadPacientesConVMXfecha($fechaInicio,$fechaFin,$sede){
+        try{
+            $this->Conectar();
+    
+            $consulta="SELECT  DISTINCT TER.estadistica
+                        FROM 	tbl_terapias_fisicas AS TER INNER JOIN tbl_estadistica_terapiafisica AS EST ON TER.estadistica=EST.codigo
+                                INNER JOIN tbl_ingreso AS ING  ON EST.codigoIngreso=ING.codigo
+                        WHERE TER.vm='SI' AND ING.sedeAtencion=:sede AND TER.fecha BETWEEN :fechaInicio AND :fechaFin ";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":sede"=>$sede,":fechaInicio"=>$fechaInicio,":fechaFin"=>$fechaFin));
+           
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar la cantidad de dias a los pacientes con ventilacion mecanica de una sede en un rango de fechas
+    */
+    public function GetConsultarCantidadDiasConVMPacientesXfecha($fechaInicio,$fechaFin,$sede){
+        try{
+            $this->Conectar();
+    
+            $consulta=" SELECT 	TER.estadistica,
+                                TER.fecha
+                        FROM tbl_terapias_fisicas AS TER INNER JOIN tbl_estadistica_terapiafisica AS EST ON TER.estadistica=EST.codigo
+                                INNER JOIN tbl_ingreso AS ING  ON EST.codigoIngreso=ING.codigo
+                        WHERE TER.vm='SI' AND ING.sedeAtencion=:sede AND TER.fecha BETWEEN :fechaInicio AND :fechaFin
+                        GROUP BY TER.estadistica,TER.fecha  ";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":sede"=>$sede,":fechaInicio"=>$fechaInicio,":fechaFin"=>$fechaFin));
+           
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    /*
+        @autor Jhon Giraldo
         Consulta la ultima terapia del paciente
     */
     public function GetUltimaTerapia($idEstadistica){
@@ -121,6 +199,30 @@ class TerapiaFisica extends Conexion{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar cambios de posicion de pacientes por fechas
+    */
+    public function GetCambiosPosicionXfecha($fechaInicio,$fechaFin,$sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_cambiosPosicionXfechas(:fechainicio,:fechafin,:sede);";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":fechainicio"=>$fechaInicio,":fechafin"=>$fechaFin,":sede"=>$sede));
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
     //metodos getter y setter
     public function SetCodigo($cod){
