@@ -32,13 +32,13 @@
 	/*INICIO CONEXION SERVIDOR UBUNTU*/
 	
 	//datos conexion mysql
-	define("DBNAMEM",'bdestadisticaPRUEBAS');
+	define("DBNAMEM",'bdestadistica');
 	define("DBUSERM",'phpmyadmin');
 	define("DBPASSM",'1234');
 	define("DBHOSTM",'localhost');
 	
-	define("BASEURL","http://10.10.10.110:8081/serviucis/pruebas/EstadisticaServiucis/");//para llamados a archivos
-	define("BASEPATH","/var/www/html/serviucis/pruebas/EstadisticaServiucis/");//para imagenes
+	define("BASEURL","http://10.10.10.110:8081/serviucis/aplicaciones/EstadisticaServiucis/");//para llamados a archivos
+	define("BASEPATH","/var/www/html/serviucis/aplicaciones/EstadisticaServiucis/");//para imagenes
 	
 	/*FIN CONEXION SERVIDOR UBUNTU*/
 
@@ -48,7 +48,7 @@
 	// muestra el metodo si no envia una accion(metodo) por GET
 	define("ActionDefault", "Iniciar");
 	
-	define("VERSION","1.1 PRUE");
+	define("VERSION","1.2.1 PRUE");
 
 	//indicamos la configuracion de la zona
     date_default_timezone_set("America/Bogota");
