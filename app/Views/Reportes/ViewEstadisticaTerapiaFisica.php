@@ -1058,7 +1058,7 @@ function ConsultarPacientesVentilados(fechaInicio,fechaFin,sede){
                 class: 'bg-danger', 
                 title: 'Validación',
                 subtitle: 'Error',
-                body: 'Error consultando perme inicial(error llamando consulta).',
+                body: 'Error consultando pacientes ventilados(error llamando consulta).',
                 icon:"fas fa-exclamation-circle",
                 autohide:true,
                 delay:5000
