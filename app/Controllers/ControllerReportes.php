@@ -1168,6 +1168,13 @@ class ControllerReportes{
         $fileName=$rutaGraficos.'grafico5.png';
         file_put_contents($fileName,$fileData);
 
+        //PROCESAMOS SEXTO GRAFICO DE PACIENTES VENTILADOS
+        $graficaPacientesVentilados=$_POST['InputPacientesVentilados'];
+        $graficaPacientesVentilados=str_replace('data:image/png;base64,','',$graficaPacientesVentilados);
+        $fileData=base64_decode($graficaPacientesVentilados);
+        $fileName=$rutaGraficos.'grafico6.png';
+        file_put_contents($fileName,$fileData);
+
 
         //CREAMOS EL PDF
         $fpdf=new PDF('P','mm','letter',true);//agregamos un parametro adicional al constructtor que nos cambia a utf8 si ingresamos true
@@ -1237,7 +1244,8 @@ class ControllerReportes{
         $fpdf->SetTextColor(0,0,0);
 
         //obtenemos cantidad d epacientes atendidos
-        $fpdf->Cell(12,5,$objEstTerapiaFisi->GetCantidadPacientesAtendidos($fechaInicial,$fechaFin,$codSede),1,0,'C');
+        $pacientesAtendidos=$objEstTerapiaFisi->GetCantidadPacientesAtendidos($fechaInicial,$fechaFin,$codSede);
+        $fpdf->Cell(12,5,$pacientesAtendidos,1,0,'C');
     
         //instanciamos modelo
         $objTerapias=new TerapiaFisica();
@@ -1309,18 +1317,19 @@ class ControllerReportes{
             $fpdf->Ln(7);
         }
         
-        $fpdf->Ln(10);
+        $fpdf->Ln(7);
 
         //FIN GRAFICO Y DATOS DE CAMBIO DE POSICION
 
         //INICIO GRAFICO Y DATOS DE TERAPIA VENTILACION MECANICA
         $fpdf->SetFont('Arial','B',12);
         $fpdf->SetX(0);
-        $fpdf->Cell(0,5,'Terapias ventilación mecánica',0,0,'C');
-        $fpdf->Ln(20);
+        
+        $fpdf->Cell(0,5,'Pacientes ventilación mecánica',0,0,'C');
+        $fpdf->Ln(0);
         $fpdf->SetX(40);
-        $fpdf->SetY(180);
-        $fpdf->Image($rutaGraficos.'grafico1.png',100,180,100,50,'png');
+        $fpdf->SetY(157);
+        $fpdf->Image($rutaGraficos.'grafico1.png',0,195,100,50,'png');
         
 
         $fpdf->SetDrawColor(16,87,97);
@@ -1328,67 +1337,66 @@ class ControllerReportes{
         $fpdf->SetFillColor(16,87,97);
         $fpdf->SetTextColor(255,255,255);
         
-        //consultamos datos del grafico
-        // seteamos el codigo de ingreso
-        $datosGrafico=$objTerapias->GetTerapiasVentilacionMecanica($fechaInicial,$fechaFin,$codSede);
+        //consultamos pacientes con vm
+        $pacientesvm=$objTerapias->GetPacientesVentilacionMecanicaXfecha($fechaInicial,$fechaFin,$codSede);
 
-        $totalTerapias=0;
-        $terapiasCVM=0;
-        $terapiasSVM=0;
-        $porcentajeCVM=0;
-        $porcentajeSVM=0;
-        //recorremos el resultado de la consulta
-        foreach($datosGrafico as $item){
-            //almacenamos el total de las terapias
-            $totalTerapias=$totalTerapias+$item["cantidad"];
-            //validmaos si la terapia es con vm
-            if($item["vm"]=="SI"){
-                //almacenamos la cantidad de tera con vm
-                $terapiasCVM=$item["cantidad"];
-            }else{
-                //almacenamos la cantidad de tera sin vm
-                $terapiasSVM=$item["cantidad"];      
-            }       
+
+        foreach($pacientesvm as $item){
+            $pacientesvm=$item["pacientesVM"];
         }
 
+        $pacientessvm=$pacientesAtendidos-$pacientesvm;
+
         //calculamos porcentaje
-        $porcentajeCVM=$terapiasCVM*100/$totalTerapias;
-        $porcentajeSVM=$terapiasSVM*100/$totalTerapias;
+        $porcentajeCVM=$pacientesvm*100/$pacientesAtendidos;
+        $porcentajeSVM=$pacientessvm*100/$pacientesAtendidos;
 
         $fpdf->SetFont('Arial','',11);
         $fpdf->SetX(10);
         $fpdf->SetLineWidth(0.5);
-        $fpdf->Cell(45,5,'N° Terapias',1,0,'L',1);
-        $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(35,5,$totalTerapias,1,0,'C');
+        $fpdf->Cell(45,5,'N° Pacientes',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0,0);
+        $fpdf->Cell(34,5,$pacientesAtendidos,1,0,'C');
+
+        $paciemtesdeambulanvm=$objTerapias->GetCantidadPacientesDeambulanconVM($fechaInicial,$fechaFin,$codSede);
+
+        $pacientesVentilados=$pacientesvm-$paciemtesdeambulanvm;
+
+
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->SetFont('Arial','',11);
+        $fpdf->SetX(110);
+        $fpdf->SetLineWidth(0.5);
+        $fpdf->Cell(55,5,'Pacientes con VM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0,0);
+        $fpdf->Cell(17,5,$pacientesVentilados,1,0,'C');
+        $fpdf->Cell(17,5,round($pacientesVentilados*100/$pacientesvm,2),1,0,'C');
         
         $fpdf->Ln(7);
         $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(45,5,'Terapias CVM',1,0,'L',1);
-        $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(35,5,$terapiasCVM,1,0,'C');
+        $fpdf->Cell(45,5,'Pacientes CVM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0,0);
+        $fpdf->Cell(17,5,$pacientesvm,1,0,'C');
+        $fpdf->Cell(17,5,round($porcentajeCVM,2) . '%',1,0,'C');
+
+        $fpdf->SetX(110);
+        $fpdf->SetTextColor(255,255,255);
+        $fpdf->Cell(55,5,'Pacientes Deambulan con VM',1,0,'L',1);
+        $fpdf->SetTextColor(0,0,0,0);
+        $fpdf->Cell(17,5,$paciemtesdeambulanvm,1,0,'C');
+        $fpdf->Cell(17,5,round($paciemtesdeambulanvm*100/$pacientesvm,2) . '%',1,0,'C');
+
+        $fpdf->Image($rutaGraficos.'grafico6.png',110,195,100,50,'png');
 
         $fpdf->Ln(7);
         $fpdf->SetX(10);
         $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(45,5,'Terapias SVM',1,0,'L',1);
+        $fpdf->Cell(45,5,'Pacientes SVM',1,0,'L',1);
         $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(35,5,$terapiasSVM,1,0,'C');
+        $fpdf->Cell(17,5,$pacientessvm,1,0,'C');
+        $fpdf->Cell(17,5,round($porcentajeSVM,2) . '%',1,0,'C');
 
-        $fpdf->Ln(7);
-        $fpdf->SetX(10);
-        $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(45,5,'% Terapias CVM',1,0,'L',1);
-        $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(35,5,round($porcentajeCVM,3) . '%',1,0,'C');
-
-        $fpdf->Ln(7);
-        $fpdf->SetX(10);
-        $fpdf->SetTextColor(255,255,255);
-        $fpdf->Cell(45,5,'% Terapias SVM',1,0,'L',1);
-        $fpdf->SetTextColor(0,0,0);
-        $fpdf->Cell(35,5,round($porcentajeSVM,3) . '%',1,0,'C');
         //FIN GRAFICO Y DATOS DE TERAPIA VENTILACION MECANICA
 
         //agregamos nueva pagina
@@ -1421,6 +1429,12 @@ class ControllerReportes{
 
         //ontenemos cambios de posicion
         $transferenciaLograda=$objEstTerapiaFisi->GetTransferenciasAlAltaXfechas($fechaInicial,$fechaFin,$codSede);
+        
+        //Sumamos el total de las transferencias para sacar porcentajes
+        $totTrans=0;
+        foreach($transferenciaLograda as $item){
+            $totTrans=$totTrans+$item["cantidad"];
+        }
 
         $fpdf->SetFont('Arial','',11);
         //recorremos todos los cambios de posicion con su total
@@ -1430,7 +1444,8 @@ class ControllerReportes{
             $fpdf->SetTextColor(255,255,255);
             $fpdf->Cell(45,5,$item["descrip"],1,0,'L',1);
             $fpdf->SetTextColor(0,0,0);
-            $fpdf->Cell(35,5,$item["cantidad"],1,0,'C'); 
+            $fpdf->Cell(17,5,$item["cantidad"],1,0,'C');
+            $fpdf->Cell(17,5,round($item["cantidad"]*100/$totTrans,2) . "%",1,0,'C'); 
             $fpdf->Ln(7);
         }
         
@@ -1456,6 +1471,12 @@ class ControllerReportes{
         $fuerza= new FuerzaIngreso();
         $fuerzaMuscularIngreso=$fuerza->GetConsultarFuerzasIngresoXfechas($fechaInicial,$fechaFin,$codSede);
 
+        //obtenemos el total de pacientes de fuerza d eingreso para calcular porcentajes
+        $totFuerzIngreso=0;
+        foreach($fuerzaMuscularIngreso as $item){
+            $totFuerzIngreso=$totFuerzIngreso+$item["fuerzaTotalIngreso"];
+        }
+
 
         $fpdf->SetFont('Arial','',11);
         $fpdf->Ln(10);
@@ -1470,7 +1491,8 @@ class ControllerReportes{
             $fpdf->SetTextColor(255,255,255);
             $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
             $fpdf->SetTextColor(0,0,0);
-            $fpdf->Cell(35,5,$item["fuerzaTotalIngreso"],1,0,'C'); 
+            $fpdf->Cell(17,5,$item["fuerzaTotalIngreso"],1,0,'C'); 
+            $fpdf->Cell(17,5,round($item["fuerzaTotalIngreso"]*100/$totFuerzIngreso,2) . "%",1,0,'C'); 
             $fpdf->Ln(7);
         }
         
@@ -1479,6 +1501,14 @@ class ControllerReportes{
         //instanciamos clase
         $fuerza= new FuerzaEgreso();
         $fuerzaMuscularEgreso=$fuerza->GetConsultarFuerzasEgresoXfechas($fechaInicial,$fechaFin,$codSede);
+
+
+        //obtenemos el total de pacientes de fuerza de egreso para calcular porcentajes
+        $totFuerzEgreso=0;
+        foreach($fuerzaMuscularEgreso as $item){
+            $totFuerzEgreso=$totFuerzEgreso+$item["fuerzaTotalEgreso"];
+        }
+
 
         $fpdf->SetFont('Arial','',11);
         $fpdf->SetX(10);
@@ -1492,7 +1522,8 @@ class ControllerReportes{
             $fpdf->SetTextColor(255,255,255);
             $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
             $fpdf->SetTextColor(0,0,0);
-            $fpdf->Cell(35,5,$item["fuerzaTotalIngreso"],1,0,'C'); 
+            $fpdf->Cell(17,5,$item["fuerzaTotalEgreso"],1,0,'C');
+            $fpdf->Cell(17,5,round($item["fuerzaTotalEgreso"]*100/$totFuerzEgreso,2) . "%",1,0,'C');  
             $fpdf->Ln(7);
         }
 
@@ -1512,7 +1543,14 @@ class ControllerReportes{
         $fpdf->SetFillColor(16,87,97);
         $fpdf->SetTextColor(0,0,0);
 
-         $permeInicial=$objEstTerapiaFisi->GetPermeInicialXfechas($fechaInicial,$fechaFin,$codSede);
+        $permeInicial=$objEstTerapiaFisi->GetPermeInicialXfechas($fechaInicial,$fechaFin,$codSede);
+
+        //obtenemos la cantidad total de perme inicial
+        $totPermeInicial=0;
+        foreach($permeInicial as $item){
+            $totPermeInicial=$totPermeInicial+$item["permeInicial"];
+        }
+
 
         $fpdf->SetFont('Arial','',11);
         $fpdf->Ln(10);
@@ -1528,7 +1566,8 @@ class ControllerReportes{
             $fpdf->SetTextColor(255,255,255);
             $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
             $fpdf->SetTextColor(0,0,0);
-            $fpdf->Cell(35,5,$item["permeInicial"],1,0,'C'); 
+            $fpdf->Cell(17,5,$item["permeInicial"],1,0,'C'); 
+            $fpdf->Cell(17,5,round($item["permeInicial"]*100/$totPermeInicial,2) . "%",1,0,'C'); 
             $fpdf->Ln(7);
         }
         
@@ -1536,6 +1575,11 @@ class ControllerReportes{
 
         $permeFinal=$objEstTerapiaFisi->GetPermeFinalXfechas($fechaInicial,$fechaFin,$codSede);
 
+        //obtenemos el total d eperme final para calcular porcentajes
+        $totPermeFinal=0;
+        foreach($permeFinal as $item){
+            $totPermeFinal=$totPermeFinal+$item["permeFinal"];
+        }
 
         $fpdf->SetFont('Arial','',11);
         
@@ -1550,7 +1594,8 @@ class ControllerReportes{
             $fpdf->SetTextColor(255,255,255);
             $fpdf->Cell(45,5,$item["CATEGORIA"],1,0,'L',1);
             $fpdf->SetTextColor(0,0,0);
-            $fpdf->Cell(35,5,$item["permeFinal"],1,0,'C'); 
+            $fpdf->Cell(17,5,$item["permeFinal"],1,0,'C'); 
+            $fpdf->Cell(17,5,round($item["permeFinal"]*100/$totPermeFinal,2) . "%",1,0,'C'); 
             $fpdf->Ln(7);
         }
 
@@ -1559,16 +1604,16 @@ class ControllerReportes{
         $nombreArchivo="ReporteTerapiaFisica".date('Y-m-d').'.pdf';
 
         //para descargar pdf
-        $fpdf->Output($nombreArchivo,'D'); 
+        //$fpdf->Output($nombreArchivo,'D'); 
         //Para visualizar en el navegador
-        //$fpdf->Output('php://output','I'); 
+        $fpdf->Output('php://output','I'); 
     }
 
     /*
         @autor Jhon Giraldo
         Consulta las terapias para traer ventilacion mecanica o no
     */
-    public function GetConsultarTerapiasVentilacionMecanica(){
+    public function GetConsultarPacientesVentilacionMecanica(){
         //recibimos parametro por post
         $fechaInicio=$_POST["fechaInicio"];
         $fechaFin=$_POST["fechaFin"];
@@ -1576,7 +1621,27 @@ class ControllerReportes{
         
         //instanciamos clase
         $estadistica= new TerapiaFisica();
-        $datos=$estadistica->GetTerapiasVentilacionMecanica($fechaInicio,$fechaFin,$sede);
+        $datos=$estadistica->GetPacientesVentilacionMecanicaXfecha($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+
+    /*
+        @autor Jhon Giraldo
+        Consulta los pacientes atendidos
+    */
+    public function GetConsultarPacientesAtendidos(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $estadistica= new EstadisticaTerapiafisica();
+        $datos=$estadistica->GetCantidadPacientesAtendidos($fechaInicio,$fechaFin,$sede);
         
         //devolvemos json 
         echo json_encode($datos);
@@ -1692,6 +1757,25 @@ class ControllerReportes{
         //instanciamos clase
         $estadistica= new EstadisticaTerapiafisica();
         $datos=$estadistica->GetPermeFinalXfechas($fechaInicio,$fechaFin,$sede);
+        
+        //devolvemos json 
+        echo json_encode($datos);
+       
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar pacientes que deambulan con vm
+    */
+    public function GetCantidadPacientesDeambulanconVM(){
+        //recibimos parametro por post
+        $fechaInicio=$_POST["fechaInicio"];
+        $fechaFin=$_POST["fechaFin"];
+        $sede=$_POST["sede"];
+        
+        //instanciamos clase
+        $terapia= new TerapiaFisica();
+        $datos=$terapia->GetCantidadPacientesDeambulanconVM($fechaInicio,$fechaFin,$sede);
         
         //devolvemos json 
         echo json_encode($datos);
