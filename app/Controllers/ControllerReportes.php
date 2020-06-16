@@ -1604,9 +1604,9 @@ class ControllerReportes{
         $nombreArchivo="ReporteTerapiaFisica".date('Y-m-d').'.pdf';
 
         //para descargar pdf
-        //$fpdf->Output($nombreArchivo,'D'); 
+        $fpdf->Output($nombreArchivo,'D'); 
         //Para visualizar en el navegador
-        $fpdf->Output('php://output','I'); 
+        //$fpdf->Output('php://output','I'); 
     }
 
     /*
