@@ -142,6 +142,7 @@
                                     <input type="hidden"  name="InputTransferenciaLograda" id="InputTransferenciaLograda"/>
                                     <input type="hidden"  name="InputFuerzaMuscular" id="InputFuerzaMuscular"/>
                                     <input type="hidden"  name="InputPermeInicialyFinal" id="InputPermeInicialyFinal"/>
+                                    <input type="hidden"  name="InputPacientesVentilados" id="InputPacientesVentilados"/>
                                     <button type="submit" class="btn btn-primary" id="exportarPDF"><img src="<?=BASEURL?>app/img/pdf.png"></img> Exportar a PDF</button>
                                 
                             </div>
@@ -190,29 +191,8 @@
                         <!-- /.card -->
                       </div> 
                       <div class="col-md-6">
-                            <!-- Donut chart -->
-                            <div class="card card-primary card-outline">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                <i class="far fa-chart-bar"></i>
-                                Terapias Ventilación Mecánica
-                                </h3>
-
-                                
-                            </div>
-                            <div class="card-body">
-                            
-                                <canvas id="terapiasVentilacionMecanica" style="height: 230px;"></canvas>
-                            </div>
-                            <!-- /.card-body-->
-                            </div>
-                            <!-- /.card -->
-                      </div>  					
-                    </div> 
-                    <div class="row">
-                      <div class="col-md-6">
-                            <!-- Donut chart -->
-                            <div class="card card-primary card-outline">
+                           <!-- Donut chart -->
+                           <div class="card card-primary card-outline">
                             <div class="card-header">
                                 <h3 class="card-title">
                                 <i class="far fa-chart-bar"></i>
@@ -227,9 +207,11 @@
                             <!-- /.card-body-->
                             </div>
                             <!-- /.card -->
-                      </div> 
+                      </div>  					
+                    </div> 
+                    <div class="row">
                       <div class="col-md-6">
-                        <!-- Donut chart -->
+                           <!-- Donut chart -->
                         <div class="card card-primary card-outline">
                           <div class="card-header">
                             <h3 class="card-title">
@@ -242,10 +224,8 @@
                           </div>
                           <!-- /.card-body-->
                         </div>
-                        <!-- /.card -->
-                      </div>   					
-                    </div>
-                    <div class="row">
+                        <!-- /.card --> 
+                      </div> 
                       <div class="col-md-6">
                         <!-- Donut chart -->
                         <div class="card card-primary card-outline">
@@ -261,7 +241,47 @@
                           <!-- /.card-body-->
                         </div>
                         <!-- /.card -->
-                      </div>  					
+                      </div>   					
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                         <!-- Donut chart -->
+                         <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                <i class="far fa-chart-bar"></i>
+                                Pacientes con Ventilación Mecánica
+                                </h3>
+
+                                
+                            </div>
+                            <div class="card-body">
+                            
+                                <canvas id="terapiasVentilacionMecanica" style="height: 230px;"></canvas>
+                            </div>
+                            <!-- /.card-body-->
+                            </div>
+                            <!-- /.card -->
+                      </div>                
+                      <div class="col-md-6">
+                         <!-- Donut chart -->
+                         <div class="card card-primary card-outline">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                <i class="far fa-chart-bar"></i>
+                                Pacientes Ventilados
+                                </h3>
+
+                                
+                            </div>
+                            <div class="card-body">
+                            
+                                <canvas id="pacientesVentilados" style="height: 230px;"></canvas>
+                            </div>
+                            <!-- /.card-body-->
+                            </div>
+                            <!-- /.card -->
+                      </div> 
                     </div>
                   </div>
                 </div>
@@ -405,6 +425,15 @@ ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede);
 //FIN CODIGO GRAFICO 5 permeInicialyFinal
 
 
+
+//CODIGO GRAFICO 6 pacientesVentilados
+var ctx6 = document.getElementById("pacientesVentilados");
+
+ConsultarPacientesVentilados(fechaInicio,fechaFin,sede);
+//FIN CODIGO GRAFICO 6 permeInicialyFinal
+
+
+
 //pasar las imagenenes al formulario y enviar
 document.getElementById('form').addEventListener("submit",function(){
 
@@ -426,6 +455,9 @@ document.getElementById('form').addEventListener("submit",function(){
     var image5= ctx5.toDataURL();
     $("#InputPermeInicialyFinal").val(image5);
 
+    var image6= ctx6.toDataURL();
+    $("#InputPacientesVentilados").val(image6);
+
 },false);
 
 
@@ -437,62 +469,86 @@ function ConsultarTerapiasVentilacionMecanica(fechaInicio,fechaFin,sede){
         type: "POST",
         dataType: 'json',
         async:false,//para que no sea asincrono
-        url: '../Reportes/GetConsultarTerapiasVentilacionMecanica',//llamado a metodo
+        url: '../Reportes/GetConsultarPacientesVentilacionMecanica',//llamado a metodo
         data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
         success: function(response)
-        {   
-          //console.log(response);
+        {  
 
-          var valores = response;
-          
-          // obtenemos los labels
-          var valorLabels = [];
-          for (var i = valores.length - 1; i >= 0; i--)  {
-            valorLabels[i] = valores[i].vm;
-          }
+          var valoresCVM = response;
 
-          //ontenemos los valores datos
-          var valoresData=[];
-          for(var i = valores.length - 1; i >= 0; i--){
-            valoresData[i]=valores[i].cantidad;
-          }
-          
-          var data = {
-              labels: valorLabels,
-              datasets: [{
-                  label: 'Terapias Ventilacion Mecanica',
-                  data: valoresData,
-                  backgroundColor: [
-                      'rgba(237, 255, 18, 1)',
-                      'rgba(255, 91, 15, 1)'
-                  ],
-                  borderColor: [
-                      'rgba(255,255,255,1)',
-                      'rgba(255,255,255,1)',
-                  ],
-                  borderWidth: 3
-              }]
-          };
-          var options = {
-                  scales: {
-                      yAxes: [{
-                          gridLines: {
-                                display:false
-                            },
-                          ticks: {
-                            display:false
-                          }
-                      }]
-                  }
+
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async:false,//para que no sea asincrono
+            url: '../Reportes/GetConsultarPacientesAtendidos',//llamado a metodo
+            data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+            success: function(response)
+            {   
+
+              var valoresSVM = response;
+              
+        
+
+              
+              var data = {
+                  labels: ["CVM","SVM"],
+                  datasets: [{
+                      label: 'Pacientes con Ventilacion Mecanica',
+                      data: [valoresCVM[0].pacientesVM,valoresSVM],
+                      backgroundColor: [
+                          'rgba(237, 255, 18, 1)',
+                          'rgba(255, 91, 15, 1)'
+                      ],
+                      borderColor: [
+                          'rgba(255,255,255,1)',
+                          'rgba(255,255,255,1)',
+                      ],
+                      borderWidth: 3
+                  }]
               };
 
-          var chart1 = new Chart(ctx1, {
-              type: 'doughnut',
-              data: data,
-              options: options
-          });
+              var options = {
+                      scales: {
+                          yAxes: [{
+                              gridLines: {
+                                    display:false
+                                },
+                              ticks: {
+                                display:false
+                              }
+                          }]
+                      }
+                  };
 
-          var dataURL = ctx1.toDataURL('image/png');
+              var chart1 = new Chart(ctx1, {
+                  type: 'doughnut',
+                  data: data,
+                  options: options
+              });
+
+              var dataURL = ctx1.toDataURL('image/png');
+
+          },
+
+              error: function (error) {
+                //mensajes de error
+                  $(document).Toasts('create', {
+                      class: 'bg-danger', 
+                      title: 'Validación',
+                      subtitle: 'Error',
+                      body: 'Error consultando pacientes atendidos(error llamando consulta).',
+                      icon:"fas fa-exclamation-circle",
+                      autohide:true,
+                      delay:5000
+                  });  
+                  console.log(error);
+              }
+      });
+
+
+         
 
         },
         error: function (error) {
@@ -501,7 +557,7 @@ function ConsultarTerapiasVentilacionMecanica(fechaInicio,fechaFin,sede){
                 class: 'bg-danger', 
                 title: 'Validación',
                 subtitle: 'Error',
-                body: 'Error consultando ventilación mecánica (error llamando consulta).',
+                body: 'Error consultando pacientes ventilación mecánica (error llamando consulta).',
                 icon:"fas fa-exclamation-circle",
                 autohide:true,
                 delay:5000
@@ -636,6 +692,7 @@ function ConsultarTransferenciaLogradaAlta(fechaInicio,fechaFin,sede){
                             },
                           ticks: {
                             //display:false
+                            beginAtZero: true
                           }
                       }]
                   }
@@ -696,10 +753,10 @@ function ConsultarFuerzaIngresoEgreso(fechaInicio,fechaFin,sede){
               var valoresEgresos = response;
               
               // obtenemos los labels
-              var valorLabels = [];
-              for (var i = valoresEgresos.length - 1; i >= 0; i--)  {
-                valorLabels[i] = valoresEgresos[i].CATEGORIA;
-              }
+              //var valorLabels = [];
+              //for (var i = valoresEgresos.length - 1; i >= 0; i--)  {
+              //  valorLabels[i] = valoresEgresos[i].CATEGORIA;
+              //}
 
               //ontenemos los valores datos de ingresos
               var valoresIngresosData=[];
@@ -710,11 +767,11 @@ function ConsultarFuerzaIngresoEgreso(fechaInicio,fechaFin,sede){
               //ontenemos los valores datos de egresos
               var valoresEgresosData=[];
               for(var i = valoresEgresos.length - 1; i >= 0; i--){
-                valoresEgresosData[i]=valoresEgresos[i].fuerzaTotalIngreso;
+                valoresEgresosData[i]=valoresEgresos[i].fuerzaTotalEgreso;
               }
               
               var data = {
-                  labels: valorLabels,
+                  labels: ["Mayor o igual 48","Menor 48","No evaluable"],
                   datasets: [{
                       label: "Fuerza Ingreso",
                       data: valoresIngresosData,
@@ -739,6 +796,7 @@ function ConsultarFuerzaIngresoEgreso(fechaInicio,fechaFin,sede){
                                 },
                               ticks: {
                                 //display:false
+                                beginAtZero: true
                               }
                           }]
                       }
@@ -816,10 +874,10 @@ function ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede){
               var valoresPermeFinal = response;
               
               // obtenemos los labels
-              var valorLabels = [];
-              for (var i = valoresPermeFinal.length - 1; i >= 0; i--)  {
-                valorLabels[i] = valoresPermeFinal[i].CATEGORIA;
-              }
+              //var valorLabels = [];
+              //for (var i = valoresPermeFinal.length - 1; i >= 0; i--)  {
+              //  valorLabels[i] = valoresPermeFinal[i].CATEGORIA;
+              //}
 
               //ontenemos los valores datos de perme inicial
               var valoresPermeInicialData=[];
@@ -834,7 +892,7 @@ function ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede){
               }
               
               var data = {
-                  labels: valorLabels,
+                  labels: ["0-7","18-32","8-17"],
                   datasets: [{
                       label: "Perme Ingreso",
                       data: valoresPermeInicialData,
@@ -859,6 +917,7 @@ function ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede){
                                 },
                               ticks: {
                                 //display:false
+                                beginAtZero: true
                               }
                           }]
                       }
@@ -886,6 +945,110 @@ function ConsultarPermeInicialyFinal(fechaInicio,fechaFin,sede){
                 });  
                 console.log(error);
             }
+      });
+
+        },
+        error: function (error) {
+          //mensajes de error
+            $(document).Toasts('create', {
+                class: 'bg-danger', 
+                title: 'Validación',
+                subtitle: 'Error',
+                body: 'Error consultando perme inicial(error llamando consulta).',
+                icon:"fas fa-exclamation-circle",
+                autohide:true,
+                delay:5000
+            });  
+            console.log(error);
+        }
+  });
+
+}
+
+
+/*
+  Funcion encargada de pacientes ventilados
+*/
+function ConsultarPacientesVentilados(fechaInicio,fechaFin,sede){
+  $.ajax({
+        type: "POST",
+        dataType: 'json',
+        async:false,//para que no sea asincrono
+        url: '../Reportes/GetConsultarPacientesVentilacionMecanica',//llamado a metodo
+        data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+        success: function(response)
+        {   
+          //console.log(response);
+
+          var valoresPacientesVM = response;
+
+          $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async:false,//para que no sea asincrono
+            url: '../Reportes/GetCantidadPacientesDeambulanconVM',//llamado a metodo
+            data: { "fechaInicio":fechaInicio,"fechaFin":fechaFin,"sede":sede}, //parametros
+            success: function(response)
+            {   
+
+              var valoresDCVM = response;
+              
+              //console.log(response);
+
+              
+              var data = {
+                  labels: ["CVM","Deambula CVM"],
+                  datasets: [{
+                      label: 'Pacientes Ventilados',
+                      data: [valoresPacientesVM[0].pacientesVM,valoresDCVM],
+                      backgroundColor: [
+                          'rgba(35, 79, 152, 1)',
+                          'rgba(157, 94, 241, 1)'
+                      ],
+                      borderColor: [
+                          'rgba(35, 79, 152, 1)',
+                          'rgba(157, 94, 241, 1)',
+                      ],
+                      borderWidth: 3
+                  }]
+              };
+
+              var options = {
+                      scales: {
+                          yAxes: [{
+                              gridLines: {
+                                    display:false
+                                },
+                              ticks: {
+                                display:false
+                              }
+                          }]
+                      }
+                  };
+
+              var chart6 = new Chart(ctx6, {
+                  type: 'doughnut',
+                  data: data,
+                  options: options
+              });
+
+              var dataURL = ctx6.toDataURL('image/png');
+
+          },
+
+              error: function (error) {
+                //mensajes de error
+                  $(document).Toasts('create', {
+                      class: 'bg-danger', 
+                      title: 'Validación',
+                      subtitle: 'Error',
+                      body: 'Error consultando pacientes atendidos(error llamando consulta).',
+                      icon:"fas fa-exclamation-circle",
+                      autohide:true,
+                      delay:5000
+                  });  
+                  console.log(error);
+              }
       });
 
         },

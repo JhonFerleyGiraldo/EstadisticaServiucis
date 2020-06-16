@@ -100,6 +100,31 @@ class TerapiaFisica extends Conexion{
 
     /*
         @autor Jhon Giraldo
+        metodo encargado de consultar la cantidad de pacientes que deambulan con ventilacion mecanica
+    */
+    public function GetCantidadPacientesDeambulanconVM($fechaInicio,$fechaFin,$sede){
+        try{
+            $this->Conectar();
+    
+            $consulta=" SELECT EST.codigoIngreso
+                        FROM    tbl_terapias_fisicas AS TER INNER JOIN tbl_estadistica_terapiafisica AS EST ON TER.estadistica =EST.codigo
+                                INNER JOIN tbl_ingreso AS ING ON ING.codigo=EST.codigoIngreso
+                        WHERE   TER.transferencia='DCV' AND   ING.sedeAtencion='110' AND TER.fecha BETWEEN '2020-05-01' AND '2020-05-3'";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":sede"=>$sede,":fechaInicio"=>$fechaInicio,":fechaFin"=>$fechaFin));
+           
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    /*
+        @autor Jhon Giraldo
         metodo encargado de consultar la cantidad de pacientes con ventilacion mecanica de una sede en un rango de fechas
     */
     public function GetConsultarCantidadPacientesConVMXfecha($fechaInicio,$fechaFin,$sede){
@@ -178,12 +203,12 @@ class TerapiaFisica extends Conexion{
         @autor Jhon Giraldo
         metodo encargado de consultar las terapias con y sin ventilacion vecanica
     */
-    public function GetTerapiasVentilacionMecanica($fechaInicio,$fechaFin,$sede){
+    public function GetPacientesVentilacionMecanicaXfecha($fechaInicio,$fechaFin,$sede){
         try{
 
             $this->Conectar();
 
-            $consulta="CALL SP_consultar_terapiasventilacionmecanica(:fechainicio,:fechafin,:sede);";
+            $consulta="CALL SP_consultar_pacientesventilacionmecanicaXfecha(:fechainicio,:fechafin,:sede);";
                                                         
             $registros=$this->conexion->prepare($consulta);
             $registros->execute(array(  ":fechainicio"=>$fechaInicio,":fechafin"=>$fechaFin,":sede"=>$sede));
