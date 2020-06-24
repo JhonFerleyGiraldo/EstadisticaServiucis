@@ -15,7 +15,7 @@
 	define("DBCHARSET","utf8");
 
 	/*INICIO SERVIDOR LOCAL */
-
+/*
 	//datos conexion mysql
 	define("DBNAMEM","bdestadistica");
 	define("DBUSERM","root");
@@ -24,7 +24,7 @@
 	
 	define("BASEURL","http://localhost/UCI/EstadisticaServiucis/");//para llamados a archivos
 	define("BASEPATH","C:\\xampp\\htdocs\\UCI\\EstadisticaServiucis\\");//para imagenes
-
+*/
 	/*FIN CONEXION LOCAL*/
 
 
