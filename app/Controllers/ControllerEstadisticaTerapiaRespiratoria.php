@@ -9,6 +9,7 @@ if(!isset($_SESSION["documentoUsuario"])){/*se valida si la sesion no esta activ
 //Llamamos archivos requeridos
 require_once("app/Models/Mysql/Ingreso.php");
 require_once("app/Models/Mysql/EstadisticaTerapiaRespiratoria.php");
+require_once("app/Models/Mysql/VentilacionMecanica.php");
 
 
 /*
@@ -96,21 +97,23 @@ class ControllerEstadisticaTerapiaRespiratoria{
                 exit();
             }
 
-
+            //instanciamos clase ingreso
             $Oingreso=new Ingreso;
             $Oingreso->SetNumeroHistoriaClinica($documento);
             $Oingreso->SetCodigoIngresoPaciente($numIngreso);
+            //consultamos ingreso por paciente
             $datosPaciente=$Oingreso->GetIngresoPorPaciente($Oingreso);
 
+            //obtenemos el codigo de la tabla ingreso
             $codigoTablaIngreso=$datosPaciente[0]["codigoIngresoTabla"];
 
             $estadistica=new EstadisticaTerapiaRespiratoria();
  
-
+            //validamos si existe la estadistica
             $existe=$estadistica->GetExisteEstadistica($codigoTablaIngreso);
 
             if(!$existe){
-       
+                //si no existe la creamos
                 $estadistica->SetInsertarEstadistica($codigoTablaIngreso,$_SESSION["codigoUsuario"]);       
             }
              
@@ -122,6 +125,10 @@ class ControllerEstadisticaTerapiaRespiratoria{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar datos de la estadistica
+    */
     public function GetDatosEstadistica(){
 
         //recibimos los datos de la terapia por POST
@@ -133,6 +140,10 @@ class ControllerEstadisticaTerapiaRespiratoria{
         echo json_encode($estadistica->GetDatosEstadistica($codigoIngreso));
     }
 
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de actualizar la estadistica
+    */
     public function SetActualizarEstadistica(){
 
         //recibimos los datos de la terapia por POST
@@ -158,6 +169,77 @@ class ControllerEstadisticaTerapiaRespiratoria{
         $estadistica->SetEstado($estado);
         
         echo json_encode($estadistica->SetActualizarEstadistica($estadistica));
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar ultima estadistica
+    */
+    public function GetUltimaVM(){
+        //recibimos los datos de la terapia por POST
+        $idEstadistica=$_POST["idEstadistica"];
+
+        //instanciamos clase y seteamos atributos
+        $estadistica = new EstadisticaTerapiaRespiratoria();
+
+        echo json_encode($estadistica->GetUltimaVM($idEstadistica));
+
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de agregar nueva ventilacion mecanica
+    */
+    public function SetAgregarNuevaVM(){
+        //recibimos los datos de la terapia por POST
+        $idEstadistica=$_POST["codigoEstadistica"];
+        $tipovm=$_POST["tipovm"];
+        $iniciovm=$_POST["iniciovm"];
+        $finvm=$_POST["finvm"];
+
+        if($finvm==''){
+            $finvm=null;
+        }
+        
+        //instanciamos clase y seteamos atributos
+        $vm = new VentilacionMecanica();
+        $vm->SetEstadistica($idEstadistica);
+        $vm->SetTipo($tipovm);
+        $vm->SetFechaInicio($iniciovm);
+        $vm->SetFechaFin($finvm);
+
+        echo json_encode($vm->SetGuardarNuevaVM($vm));
+
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de consultar ventilacion mecanida de la estadistica
+    */
+    public function GetConsultarVMporEstadistica(){
+
+        $idEstadistica=$_POST["idEstadistica"];
+
+        $vm=new VentilacionMecanica();
+        
+        echo json_encode($vm->GetVMporEstadistica($idEstadistica));
+    }
+
+    /*
+        @autor Jhon Giraldo
+        Metodo encargado de retirar la ventilacion mecanica
+    */
+    public function SetRetirarVM(){
+
+        $idEstadistica=$_POST["idEstadistica"];
+        $idvm=$_POST["idvm"];
+
+        $vm=new VentilacionMecanica();
+        $vm->SetCodigo($idvm);
+        $vm->SetEstadistica($idEstadistica);
+        $vm->SetFechaFin(date('Y-m-d'));
+        
+        echo json_encode($vm->SetRetirarVM($vm));
     }
 
 }

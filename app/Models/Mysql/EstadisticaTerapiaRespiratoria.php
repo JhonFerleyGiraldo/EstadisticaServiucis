@@ -55,7 +55,10 @@ class EstadisticaTerapiaRespiratoria extends Conexion{
         }
     }
 
-    
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de validar si existe la estadistica
+    */
     public function GetExisteEstadistica($codIngreso){
         try{
             $this->Conectar();
@@ -75,6 +78,10 @@ class EstadisticaTerapiaRespiratoria extends Conexion{
         }
     }
 
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar los datos de una estadistica
+    */
     public function GetDatosEstadistica($codigoIngreso){
         try{
 
@@ -119,7 +126,44 @@ class EstadisticaTerapiaRespiratoria extends Conexion{
         }catch(Exception $e){
             echo "Error: " . $e->getMessage();
         }
+
     }
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar la ultima ventilacion mecanica
+    */
+    public function GetUltimaVM($codEstadistica){
+        try{
+
+            $this->Conectar();
+
+            $consulta=" SELECT  codigo AS 'codigo',
+                                estadistica AS 'estadistica',
+                                tipo AS 'tipo',
+                                fechaInicio AS 'inicio',
+                                fechaFin AS 'fin'
+                        FROM tbl_ventilacionmecanica
+                        WHERE estadistica=:codEstadistica
+                        ORDER BY fechaInicio DESC
+                        LIMIT 1";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":codEstadistica"=>$codEstadistica));
+
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+
+    
 
     //metodos getter y setter
     public function GetCodigo(){
