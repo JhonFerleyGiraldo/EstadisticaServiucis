@@ -892,6 +892,7 @@ $.ajax({
                   autohide:true,
                   delay:5000
               });  
+              console.log(error);
           }
   });
 
