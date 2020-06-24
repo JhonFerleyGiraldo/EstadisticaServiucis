@@ -22,8 +22,8 @@
 	define("DBPASSM","");
 	define("DBHOSTM","localhost");
 	
-	define("BASEURL","http://localhost/UCI/EstadisticaEnfermeria/");//para llamados a archivos
-	define("BASEPATH","C:\\xampp\\htdocs\\UCI\\EstadisticaEnfermeria\\");//para imagenes
+	define("BASEURL","http://localhost/UCI/EstadisticaServiucis/");//para llamados a archivos
+	define("BASEPATH","C:\\xampp\\htdocs\\UCI\\EstadisticaServiucis\\");//para imagenes
 */
 	/*FIN CONEXION LOCAL*/
 

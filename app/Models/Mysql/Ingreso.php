@@ -115,6 +115,30 @@ class Ingreso extends Conexion{
         }
     }
 
+
+    /*
+        @autor Jhon Giraldo
+        metodo encargado de consultar listado de pacientes de terapia respiratoria
+    */
+    public function GetListadoPacientesTerapiaRespiratoria($sede){
+        try{
+
+            $this->Conectar();
+
+            $consulta="CALL SP_consultar_listadoPacientesTerapiaRespiratoria(:sede);";
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(':sede'=>$sede));
+            $resultado=$registros->fetchall(PDO::FETCH_ASSOC);
+
+            $this->Desconectar();
+
+            return $resultado;
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
     /*
         @autor Jhon Giraldo
         metodo encargado de consultar listado de pacientes que estan en cama y no han egresado
