@@ -88,7 +88,9 @@
               <form role="form">
                 <?php
                   $nombreCompleto=""; 
+                  $fechaIngreso;
                   foreach($datosPaciente as $item):
+                    $fechaIngreso=$item["fechaIngreso"];
                     $nombreCompleto=$item["primerNombre"] . " " . $item["segundoNombre"] . " " . $item["primerApellido"] . " " . $item["segundoApellido"]; 
                 ?>
                 <div class="card-body">
@@ -488,8 +490,13 @@
 var codigoTablaIngreso;
 var codigoEstadistica;
 var tqt; //variable vara validar si el paciente tiene traqueostomia
+var fechaIngresoPaciente; //Fecha en la que ingreso el paciente a la institucion
 
 $(document).ready(function(){
+
+    //obtenemos fecha ingreso paciente
+    fechaIngresoPaciente='<?= $fechaIngreso; ?>';
+
 
     codigoTablaIngreso=<?= $codigoTablaIngreso ?>; 
 
@@ -588,6 +595,23 @@ function btnActualizarEstadistica(){
   var tqt=$("#tqt").val();
   var neumoniavm=$("#neumoniavm").val();
   var estado=$("#estado").val();
+
+  //validamos si tqt es diferente a vacio
+  if(tqt!=''){
+    //validamos que tqt no sea menor a la fecha de ingreso
+    if(tqt<fechaIngresoPaciente){
+      $(document).Toasts('create', {
+        class: 'bg-warning', 
+        title: 'Validación',
+        subtitle: 'Aviso',
+        body: 'La fecha de TQT no puede ser menor a la fecha de ingreso.',
+        icon:"fas fa-exclamation-triangle",
+        autohide:true,
+        delay:5000
+      });
+      return false;
+    }
+  }
 
   ActualizarEstadistica(codigoEstadistica,codigoTablaIngreso,tqt,neumoniavm,estado);
 
@@ -704,6 +728,20 @@ $("#btnAgregarvm").click(function(){
       });
       return false;
     }
+  }
+
+  //validamos que la fecha de inicio no sea menor a la del ingreso
+  if(iniciovm<fechaIngresoPaciente){
+    $(document).Toasts('create', {
+        class: 'bg-warning', 
+        title: 'Validación',
+        subtitle: 'Aviso',
+        body: 'La fecha de inserción no puede ser menor a la fecha de ingreso.',
+        icon:"fas fa-exclamation-triangle",
+        autohide:true,
+        delay:5000
+      });
+      return false;
   }
 
 //consultamos datos de la ultima vm
