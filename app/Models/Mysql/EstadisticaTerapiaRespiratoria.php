@@ -129,6 +129,27 @@ class EstadisticaTerapiaRespiratoria extends Conexion{
 
     }
 
+    public function SetActualizarVMestadistica(EstadisticaTerapiaRespiratoria $estadistica){
+        try{
+            $this->Conectar();
+    
+            $consulta=" UPDATE tbl_estadistica_terapiarespiratoria SET ventilacionMecanica=:vm
+                        WHERE codigo=:estadistica AND consecutivoIngreso=:ingreso";
+                                                        
+            $registros=$this->conexion->prepare($consulta);
+            $registros->execute(array(  ":estadistica"=>$estadistica->GetCodigo(),":ingreso"=>$estadistica->GetConsecutivoIngreso(),
+                                        ":vm"=>$estadistica->GetVentilacionMecanica()));
+           
+            $this->Desconectar();
+
+            return $registros->rowCount();
+
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+
+    }
+
     /*
         @autor Jhon Giraldo
         metodo encargado de consultar la ultima ventilacion mecanica
