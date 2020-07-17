@@ -287,7 +287,7 @@
             <!-- general form elements -->
             <div class="card card-secondary">
               <div class="card-header">
-                <h3 class="card-title">Fuerza de ingreso MSI</h3>
+                <h3 class="card-title">Fracaso Extubación</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -295,24 +295,18 @@
                 <div class="card-body">
                   <div class="form-group">
                   <div class="row">
-                      <div class="col-md-2">
-                        <label for="MSIabdhom">ABD HOM</label>
+                      <div class="col-md-3">
+                        <label for="fechaFracasoExt">Fecha Fracaso</label>
                       </div>
-                      <div class="col-md-2">
-                        <input type="text" class="form-control" onKeyPress="return soloNumeros(event)" maxlength="1" id="MSIabdhom">
+                      <div class="col-md-4">
+                        <input type="date" class="form-control" id="fechaFracasoExt" max="<?= date('Y-m-d'); ?>">
                       </div> 
 							        <div class="col-md-2">
-                        <label for="MSIflecod">FLE COD</label>
+                       
                       </div>
-                      <div class="col-md-2">
-                        <input type="text" class="form-control" onKeyPress="return soloNumeros(event)" maxlength="1" id="MSIflecod">
-                      </div>
-							        <div class="col-md-2">
-								        <label for="MSIextmun">EXT MUÑ</label>
-                      </div>
-                      <div class="col-md-2">
-                        <input type="text" class="form-control" onKeyPress="return soloNumeros(event)" maxlength="1" id="MSIextmun">
-                      </div> 							
+                      <div class="col-md-3">
+                        <button id="btnAgregarFracasoExt" type="button"  class="btn btn-primary"><img src="<?=BASEURL?>app/img/agregar.png"></img> Agregar</button>
+                      </div>							
                     </div> 
                   </div> 
                 </div>
@@ -662,6 +656,27 @@ function ActualizarEstadistica(idEstadistica,codIngreso,tqt,neumoniavm,estado){
 
 }
 
+//evento de click del boton agregar fracaso extubacion
+$("#btnAgregarFracasoExt").click(function(){
+
+  var fecha=$("#fechaFracasoExt").val();
+
+  if(fecha==''){
+    $(document).Toasts('create', {
+          class: 'bg-warning', 
+          title: 'Validación',
+          subtitle: 'Aviso',
+          body: 'Debe seleccionar una fecha de fracaso.',
+          icon:"fas fa-exclamation-triangle",
+          autohide:true,
+          delay:5000
+        });
+        return false;
+  }
+
+  ConsultarUltimoFracasoExt();
+
+});
 
 //evento de click del boton para agregar ventilacion mecanica
 $("#btnAgregarvm").click(function(){
@@ -789,9 +804,76 @@ $("#btnAgregarvm").click(function(){
     $("#fechafinvm").val('');
   }
 
-  $datosVM=ConsultarVMporEstadistica(codigoEstadistica);
+//consultamos las ventilaciones mecanicas
+  var datosVM=ConsultarVMporEstadistica(codigoEstadistica);
+
+//contadores para vm
+  vmni=0;
+  vm=0;
+  //recorremos las ventilaciones mecanicas para saber si tiene vm normal o vmni
+  $(datosVM).each(function(i, v){
+    if(v.tipo=='VM' || v.tipo=='VMTQT'){
+      vm++;
+    }else if(v.tipo=='VMNI'){
+      vmni++;
+    }
+  });
+
+  //validamos si el paciente tiene ventilacion mecanica
+  if(vm>0){
+    ActualizarVMestadistica(codigoEstadistica,codigoTablaIngreso,'VM');
+    $("#ventilacionMecanica").val('VM');  
+  }else{
+    //validamos si el paciente tiene vmni exclusiva
+    //esto quiere decir que no tiene vm normal
+    if(vmni>0){
+      ActualizarVMestadistica(codigoEstadistica,codigoTablaIngreso,'VMNI');
+      $("#ventilacionMecanica").val('VMNI');  
+    }
+  }
  
 });
+
+
+function ActualizarVMestadistica(idEstadistica,codIngreso,vm){
+
+$.ajax({
+      type: "POST",
+      dataType: 'json',
+      async:false,//para que no sea asincrono
+      url: '../EstadisticaTerapiaRespiratoria/SetActualizarVMestadistica',//llamado a metodo
+      data: { "idEstadistica":idEstadistica,"codIngreso":codIngreso,"vm":vm}, //parametros
+      success: function(response)
+      {   
+
+        console.log(response);
+        $(document).Toasts('create', {
+              class: 'bg-success', 
+              title: 'Validación',
+              subtitle: 'Aviso',
+              body: 'Ventilación mecánica actualizada en estadistica general.',
+              icon:"fas fa-check-circle",
+              autohide:true,
+              delay:5000
+            });
+      },
+      error: function (error) {
+        //mensajes de error
+          $(document).Toasts('create', {
+              class: 'bg-danger', 
+              title: 'Validación',
+              subtitle: 'Error',
+              body: 'Error aVentilación mecánica actualizada en estadistica general(error llamando consulta).',
+              icon:"fas fa-exclamation-circle",
+              autohide:true,
+              delay:5000
+          });  
+          console.log(error);
+
+      }
+});
+
+}
 
 
 //funcion encargada de agregar nueva ventilacion mecanica
@@ -883,6 +965,35 @@ $.ajax({
 
 return datos;
 
+}
+
+function ConsultarUltimoFracasoExt(idEstadistica){
+  var datos;
+  $.ajax({
+    type:'POST',
+    dataType:'json',
+    async:false,
+    url: '../EstadisticaTerapiaRespiratoria/GetUltimaVM',
+    data:{'idEstadistica':idEstadistica},
+    success: function(response){
+      console.log(response);
+      datos=response;
+    },
+    error: function(error){
+      //mensajes de error
+      $(document).Toasts('create', {
+              class: 'bg-danger', 
+              title: 'Validación',
+              subtitle: 'Error',
+              body: 'Error consultando ultimo fracaso extubacion (error llamando consulta).',
+              icon:"fas fa-exclamation-circle",
+              autohide:true,
+              delay:5000
+          });  
+          console.log(error);
+    }
+  });
+  return datos;
 }
 
 //funcion encargada de consultar las ventilaciones mecanicas del paciente
