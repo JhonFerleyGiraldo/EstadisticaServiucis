@@ -171,6 +171,22 @@ class ControllerEstadisticaTerapiaRespiratoria{
         echo json_encode($estadistica->SetActualizarEstadistica($estadistica));
     }
 
+    public function SetActualizarVMestadistica(){
+        //recibimos los datos de la terapia por POST
+        $idEstadistica=$_POST["idEstadistica"];
+        $codIngreso=$_POST["codIngreso"];
+        $vm=$_POST["vm"];
+
+
+        //instanciamos clase y seteamos atributos
+        $estadistica = new EstadisticaTerapiaRespiratoria();
+        $estadistica->SetCodigo($idEstadistica);
+        $estadistica->SetConsecutivoIngreso($codIngreso);
+        $estadistica->SetVentilacionMecanica($vm);
+        
+        echo json_encode($estadistica->SetActualizarVMestadistica($estadistica));
+    }
+
     /*
         @autor Jhon Giraldo
         Metodo encargado de consultar ultima estadistica
